@@ -1,2 +1,7 @@
 # game-critic-bot
-Telegram bot for viewing ratings and reviews of video games
+
+## Introduction
+This telegram bot provides viewing of ratings and reviews of video games using various contextual filters.
+
+## Contributors:
+1. Мухин Федор Алексеевич
