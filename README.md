@@ -1,4 +1,4 @@
-# game-critic-bot
+![Logotype-with-text](https://user-images.githubusercontent.com/71270225/134701962-4cddf69f-ca4e-404e-87a1-9d19eeed6d39.png)
 
 ## Table of contents
 
