@@ -15,7 +15,7 @@ The user can apply various filters to get the top video games for a specific pla
 
 ## Contributors
 
-Группа 3530904/90104
+### Группа 3530904/90104
 
 1. Мухин Федор Алексеевич - [TheTedLab](https://github.com/TheTedLab)
 2. Хильченко Михаил Юрьевич - [khilchenkomikhail](https://github.com/khilchenkomikhail)
