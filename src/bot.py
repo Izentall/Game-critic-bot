@@ -53,7 +53,7 @@ def start(update: Update, context: CallbackContext) -> int:
     keyboard = [
         [
             InlineKeyboardButton("Топы Игр", callback_data=str(TOPS)),
-            InlineKeyboardButton("Посмотреть по платформам", callback_data=str(PLATFORMS)),
+            InlineKeyboardButton("Платформы", callback_data=str(PLATFORMS)),
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -71,7 +71,7 @@ def start_over(update: Update, context: CallbackContext) -> int:
     keyboard = [
         [
             InlineKeyboardButton("Топы Игр", callback_data=str(TOPS)),
-            InlineKeyboardButton("Посмотреть по платформам", callback_data=str(PLATFORMS)),
+            InlineKeyboardButton("Платформы", callback_data=str(PLATFORMS)),
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -87,11 +87,9 @@ def tops(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     keyboard = [
-        [
-            InlineKeyboardButton("Топ этого года", callback_data=str(CURRENT_YEAR)),
-            InlineKeyboardButton("Топ 2020 года", callback_data=str(YEAR_2020)),
-            InlineKeyboardButton("Топ десятилетия", callback_data=str(DECADE)),
-        ]
+        [InlineKeyboardButton("Топ этого года", callback_data=str(CURRENT_YEAR))],
+        [InlineKeyboardButton("Топ 2020 года", callback_data=str(YEAR_2020))],
+        [InlineKeyboardButton("Топ десятилетия", callback_data=str(DECADE))]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     query.edit_message_text(
@@ -106,12 +104,10 @@ def platforms(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     keyboard = [
-        [
-            InlineKeyboardButton("PC", callback_data=str(PC)),
-            InlineKeyboardButton("PlayStation", callback_data=str(PLAYSTATION)),
-            InlineKeyboardButton("Xbox", callback_data=str(XBOX)),
-            InlineKeyboardButton("Switch", callback_data=str(SWITCH)),
-        ]
+        [InlineKeyboardButton("PC", callback_data=str(PC)),
+         InlineKeyboardButton("PlayStation", callback_data=str(PLAYSTATION))],
+        [InlineKeyboardButton("Xbox", callback_data=str(XBOX)),
+         InlineKeyboardButton("Switch", callback_data=str(SWITCH))]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     query.edit_message_text(
