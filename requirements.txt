@@ -8,3 +8,5 @@ telegram==0.0.1
 tornado==6.1
 tzdata==2021.2.post0
 tzlocal==3.0
+Telethon==1.23.0
+pytest==6.2.5
