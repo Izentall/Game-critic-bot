@@ -20,4 +20,4 @@ The user can apply various filters to get the top video games for a specific pla
 1. Мухин Федор Алексеевич - [TheTedLab](https://github.com/TheTedLab)
 2. Хильченко Михаил Юрьевич - [khilchenkomikhail](https://github.com/khilchenkomikhail)
 3. Кичигин Юрий Сергеевич - [Izentall](https://github.com/Izentall)
-4. Ершов Вадим Дмитриевич [vadim01er](https://github.com/vadim01er)
+4. Ершов Вадим Дмитриевич - [vadim01er](https://github.com/vadim01er)

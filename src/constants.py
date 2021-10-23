@@ -9,9 +9,11 @@ memo_emoji = u'\U0001F4DD'
 loudspeaker = u'\U0001F4E2'
 
 # Состояния
-MENU, TOPS_SUBMENU, TOPS_QUESTION, PLATFORM_SUBMENU, PLATFORM_QUESTION = range(5)
+MENU, TOPS_SUBMENU, TOPS_QUESTION, PLATFORM_SUBMENU, PLAYSTATION_SUBMENU, \
+    XBOX_SUBMENU, PLATFORM_QUESTION = range(7)
 # Переходы
-TOPS, PLATFORMS, CURRENT_YEAR, YEAR_2020, DECADE, MENU_BACKUP = range(6)
+TOPS, PLATFORMS, CURRENT_YEAR, YEAR_2020, DECADE, MENU_BACKUP, \
+    PS4, PS5, XBOX_ONE, XBOX_SERIES = range(10)
 # Платформы
 PC, PLAYSTATION, XBOX, SWITCH = range(4)
 # Варианты ответа для TOPS
@@ -45,14 +47,24 @@ keyboard_MENU = [
 keyboard_TOPS = [
     [InlineKeyboardButton("Топ этого года", callback_data=str(CURRENT_YEAR))],
     [InlineKeyboardButton("Топ 2020 года", callback_data=str(YEAR_2020))],
-    [InlineKeyboardButton("Топ десятилетия", callback_data=str(DECADE))]
+    [InlineKeyboardButton("Топ десятилетия", callback_data=str(DECADE))],
 ]
 
 keyboard_PLATFORMS = [
     [InlineKeyboardButton("PC", callback_data=str(PC)),
      InlineKeyboardButton("PlayStation", callback_data=str(PLAYSTATION))],
     [InlineKeyboardButton("Xbox", callback_data=str(XBOX)),
-     InlineKeyboardButton("Switch", callback_data=str(SWITCH))]
+     InlineKeyboardButton("Switch", callback_data=str(SWITCH))],
+]
+
+keyboard_PLAYSTATION_SUBMENU = [
+    [InlineKeyboardButton("PS4", callback_data=str(PS4))],
+    [InlineKeyboardButton("PS5", callback_data=str(PS5))],
+]
+
+keyboard_XBOX_SUBMENU = [
+    [InlineKeyboardButton("Xbox One", callback_data=str(XBOX_ONE))],
+    [InlineKeyboardButton("Xbox Series X", callback_data=str(XBOX_SERIES))],
 ]
 
 keyboard_QUESTION_TOPS = [
