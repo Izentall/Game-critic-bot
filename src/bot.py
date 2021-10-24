@@ -11,13 +11,13 @@ from src.commands import (
     start, start_over, new_start, help_func, echo_func,
     tops, platforms,
     current_year, year_2020, decade,
-    pc_func, playstation_func, xbox_func, switch_func,
+    pc_func, playstation_func, xbox_func, switch_func, ps4_func, ps5_func, xbox_one_func, xbox_series_func,
 )
 from src.constants import (
     MENU, TOPS_SUBMENU, TOPS_QUESTION, PLATFORM_SUBMENU, PLATFORM_QUESTION,
     TOPS, PLATFORMS, CURRENT_YEAR, YEAR_2020, DECADE, MENU_BACKUP,
     PC, PLAYSTATION, XBOX, SWITCH,
-    YES_TOPS, NO_TOPS, YES_PLATFORMS, NO_PLATFORMS,
+    YES_TOPS, NO_TOPS, YES_PLATFORMS, NO_PLATFORMS, PLAYSTATION_SUBMENU, PS4, PS5, XBOX_SUBMENU, XBOX_ONE, XBOX_SERIES,
 )
 
 
@@ -55,6 +55,14 @@ def main() -> None:
             PLATFORM_QUESTION: [
                 CallbackQueryHandler(platforms, pattern='^' + str(YES_PLATFORMS) + '$'),
                 CallbackQueryHandler(start_over, pattern='^' + str(NO_PLATFORMS) + '$'),
+            ],
+            PLAYSTATION_SUBMENU: [
+                CallbackQueryHandler(ps4_func, pattern='^' + str(PS4) + '$'),
+                CallbackQueryHandler(ps5_func, pattern='^' + str(PS5) + '$'),
+            ],
+            XBOX_SUBMENU: [
+                CallbackQueryHandler(xbox_one_func, pattern='^' + str(XBOX_ONE) + '$'),
+                CallbackQueryHandler(xbox_series_func, pattern='^' + str(XBOX_SERIES) + '$'),
             ],
         },
         fallbacks=[

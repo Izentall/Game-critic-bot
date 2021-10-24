@@ -5,11 +5,11 @@ from telegram.ext import CallbackContext
 
 from src.constants import (
     hand_emoji,
-    MENU, TOPS_SUBMENU, TOPS_QUESTION, PLATFORM_SUBMENU, PLATFORM_QUESTION,
+    MENU, TOPS_SUBMENU, TOPS_QUESTION, PLATFORM_SUBMENU, PLATFORM_QUESTION, PLAYSTATION_SUBMENU,
     greetings_text, using_buttons_text, select_top_text, select_platform_text,
     want_see_tops_text, want_see_platforms_text, help_text,
     keyboard_MENU, keyboard_TOPS, keyboard_PLATFORMS, keyboard_QUESTION_TOPS,
-    keyboard_QUESTION_PLATFORMS, keyboard_ON_GAME,
+    keyboard_QUESTION_PLATFORMS, keyboard_ON_GAME, keyboard_PLAYSTATION_SUBMENU, keyboard_XBOX_SUBMENU, XBOX_SUBMENU,
 )
 
 # Логирование
@@ -179,7 +179,42 @@ def pc_func(update: Update, context: CallbackContext) -> int:
 
 
 def playstation_func(update: Update, context: CallbackContext) -> int:
-    """Информация по топу игр на Playstation, затем показать новый выбор кнопок"""
+    """Показать кнопки выбора Playstation"""
+    query = update.callback_query
+    query.answer()
+    reply_markup_keyboard = InlineKeyboardMarkup(keyboard_PLAYSTATION_SUBMENU)
+    query.edit_message_text(text=select_platform_text, reply_markup=reply_markup_keyboard)
+    # Переход в состояние PLAYSTATION_SUBMENU
+    return PLAYSTATION_SUBMENU
+
+
+def ps4_func(update: Update, context: CallbackContext) -> int:
+    """Информация по топу игр на Playstation 4, затем показать новый выбор кнопок"""
+    query = update.callback_query
+    query.answer()
+    reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
+    # Здесь будет запрос данных с метакритики, пока что хардкод
+    query.edit_message_text(
+        text=
+        '1. Synth Riders\n' +
+        'METASCORE: 89\n\n' +
+        '2. Quake Remastered\n' +
+        'METASCORE: 88\n\n' +
+        '3. Psychonauts 2\n' +
+        'METASCORE: 87\n\n' +
+        '4. Flynn: Son of Crimson\n' +
+        'METASCORE: 85\n\n' +
+        '5. Castlevania Advance Collection\n' +
+        'METASCORE: 84\n\n' +
+        want_see_platforms_text,
+        reply_markup=reply_markup_keyboard
+    )
+    # Переход в состояние PLATFORM_QUESTION
+    return PLATFORM_QUESTION
+
+
+def ps5_func(update: Update, context: CallbackContext) -> int:
+    """Информация по топу игр на Playstation 5, затем показать новый выбор кнопок"""
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
@@ -188,14 +223,14 @@ def playstation_func(update: Update, context: CallbackContext) -> int:
         text=
         '1. Hades\n' +
         'METASCORE: 93\n\n' +
-        '2. Synth Riders\n' +
-        'METASCORE: 89\n\n' +
-        '3. Deathloop\n' +
+        '2. Deathloop\n' +
         'METASCORE: 88\n\n' +
-        '4. Quake Remastered\n' +
+        '3. Ghost of Tsushima: Director\'s Cut\n' +
         'METASCORE: 88\n\n' +
-        '5. Ghost of Tsushima: Director\'s Cut\n' +
+        '4. Bonfire Peaks\n' +
         'METASCORE: 88\n\n' +
+        '5. Tales of Arise\n' +
+        'METASCORE: 87\n\n' +
         want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
@@ -204,7 +239,42 @@ def playstation_func(update: Update, context: CallbackContext) -> int:
 
 
 def xbox_func(update: Update, context: CallbackContext) -> int:
-    """Информация по топу игр на Xbox, затем показать новый выбор кнопок"""
+    """Показать кнопки выбора Xbox"""
+    query = update.callback_query
+    query.answer()
+    reply_markup_keyboard = InlineKeyboardMarkup(keyboard_XBOX_SUBMENU)
+    query.edit_message_text(text=select_platform_text, reply_markup=reply_markup_keyboard)
+    # Переход в состояние XBOX_SUBMENU
+    return XBOX_SUBMENU
+
+
+def xbox_one_func(update: Update, context: CallbackContext) -> int:
+    """Информация по топу игр на Xbox One, затем показать новый выбор кнопок"""
+    query = update.callback_query
+    query.answer()
+    reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
+    # Здесь будет запрос данных с метакритики, пока что хардкод
+    query.edit_message_text(
+        text=
+        '1. Psychonauts 2\n' +
+        'METASCORE: 91\n\n' +
+        '2. The Forgotten City\n' +
+        'METASCORE: 88\n\n' +
+        '3. UnMetal\n' +
+        'METASCORE: 87\n\n' +
+        '4. Sam & Max Save the World Remastered\n' +
+        'METASCORE: 84\n\n' +
+        '5. Insurgency: Sandstorm\n' +
+        'METASCORE: 84\n\n' +
+        want_see_platforms_text,
+        reply_markup=reply_markup_keyboard
+    )
+    # Переход в состояние PLATFORM_QUESTION
+    return PLATFORM_QUESTION
+
+
+def xbox_series_func(update: Update, context: CallbackContext) -> int:
+    """Информация по топу игр на Xbox Series X, затем показать новый выбор кнопок"""
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
@@ -213,14 +283,14 @@ def xbox_func(update: Update, context: CallbackContext) -> int:
         text=
         '1. Hades\n' +
         'METASCORE: 93\n\n' +
-        '2. Psychonauts 2\n' +
-        'METASCORE: 91\n\n' +
-        '3. Microsoft Flight Simulator\n' +
+        '2. Microsoft Flight Simulator\n' +
         'METASCORE: 90\n\n' +
-        '4. Streets of Rage 4: Mr. X Nightmare\n' +
+        '3. Fuga: Melodies of Steel\n' +
         'METASCORE: 89\n\n' +
-        '5. Fuga: Melodies of Steel\n' +
-        'METASCORE: 89\n\n' +
+        '4. Psychonauts 2\n' +
+        'METASCORE: 87\n\n' +
+        '5. Tales of Arise\n' +
+        'METASCORE: 87\n\n' +
         want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )

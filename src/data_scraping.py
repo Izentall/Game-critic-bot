@@ -1,10 +1,12 @@
 from bs4 import BeautifulSoup
 import requests
 
+
 def get_response(url):
     user_agent = {'User-Agent': 'Chrome/94.0.4606.71'}
     response = requests.get(url, headers=user_agent)
     return response
+
 
 def get_top_5_by_year(year):
     if year < 1916 or year > 2021:
@@ -22,6 +24,7 @@ def get_top_5_by_year(year):
         result.append((score, name, platform, date))
     return result
 
+
 def get_top_50_for_decade():
     url = "https://www.metacritic.com/feature/best-videogames-of-the-decade-2010s"
     responce = get_response(url)
@@ -32,7 +35,7 @@ def get_top_50_for_decade():
     for i in range(len(games_container)):
         game_number = games_container[i].td.text
         game = games_container[i].text
-        year = game[game.rfind(',')+1:game.rfind(')')].strip()
+        year = game[game.rfind(',') + 1:game.rfind(')')].strip()
         score = game[game.rfind(')') + 1:]
         platform = game[game.rfind('(') + 1:game.rfind(',')]
         game = game.replace(game_number, "")
