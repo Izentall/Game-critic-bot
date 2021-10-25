@@ -227,3 +227,7 @@ src/authorization.py
 
 # API data for tests
 src/test/api_data.py
+
+# Default ignored files
+/shelf/
+/workspace.xml
