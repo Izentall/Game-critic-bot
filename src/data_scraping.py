@@ -2,6 +2,20 @@ from bs4 import BeautifulSoup
 import requests
 
 
+class Game(object):
+    def __init__(self, score, name, platform, date):
+        self.score = score
+        self.name = name
+        self.platform = platform
+        self.date = date
+
+    def get_string(self):
+        return "Score: " + self.score + ", Name: " + self.name + ", Platform: " + self.platform + ", Date: " + self.date
+
+    def get_string_without_date(self):
+        return "Score: " + self.score + ", Name: " + self.name + ", Platform: " + self.platform
+
+
 def get_response(url):
     user_agent = {'User-Agent': 'Chrome/94.0.4606.71'}
     response = requests.get(url, headers=user_agent)
@@ -21,7 +35,7 @@ def get_top_5_by_year(year):
         name = games_container[i].find('a', class_='title').h3.text
         platform = games_container[i].find('div', class_='platform').find('span', class_='data').text.strip()
         date = games_container[i].find('div', class_='clamp-details').findAll('span')[2].text
-        result.append((score, name, platform, date))
+        result.append(Game(score, name, platform, date))
     return result
 
 
@@ -40,7 +54,7 @@ def get_top_50_for_decade():
         platform = game[game.rfind('(') + 1:game.rfind(',')]
         game = game.replace(game_number, "")
         name = game[:game.rfind('(')].strip()
-        result.append((score, name, platform, year))
+        result.append(Game(score, name, platform, year))
     return result
 
 # def main():
