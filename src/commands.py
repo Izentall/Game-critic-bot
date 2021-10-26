@@ -2,6 +2,8 @@ import logging
 
 from telegram import Update, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
+import data_scraping
+import datetime
 
 from src.constants import (
     hand_emoji,
@@ -73,20 +75,13 @@ def current_year(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_TOPS)
-    # Здесь будет запрос данных с метакритики, пока что хардкод
+
+    top___by_year = data_scraping.get_top_5_by_year(datetime.datetime.now().year)
+    out_text = ''
+    for game in top___by_year[:5]:
+        out_text += game.get_string_without_date() + "\n"
     query.edit_message_text(
-        text=
-        '1. Disco Elysium: The Final Cut\n' +
-        'METASCORE: 97, PLATFORM: PC\n\n' +
-        '2. The House in Fata Morgana - Dreams of the Revenants Edition\n' +
-        'METASCORE: 97, PLATFORM: SWITCH\n\n' +
-        '3. Hades\n' +
-        'METASCORE: 93, PLATFORM: XBOX SERIES X\n\n' +
-        '4. Hades\n' +
-        'METASCORE: 93, PLATFORM: PLAYSTATION 5\n\n' +
-        '5. Psychonauts 2\n' +
-        'METASCORE: 91, PLATFORM: XBOX\n\n' +
-        want_see_tops_text,
+        text=out_text + want_see_tops_text,
         reply_markup=reply_markup_keyboard
     )
     # Переход в состояние TOPS_QUESTION
@@ -98,20 +93,12 @@ def year_2020(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_TOPS)
-    # Здесь будет запрос данных с метакритики, пока что хардкод
+    top___by_last_year = data_scraping.get_top_5_by_year(datetime.datetime.now().year - 1)
+    out_text = ''
+    for game in top___by_last_year[:5]:
+        out_text += game.get_string_without_date() + "\n"
     query.edit_message_text(
-        text=
-        '1. Persona 5 Royal\n' +
-        'METASCORE: 95, PLATFORM: PLAYSTATION\n\n' +
-        '2. Half-Life: Alyx\n' +
-        'METASCORE: 93, PLATFORM: PC\n\n' +
-        '3. Hades\n' +
-        'METASCORE: 93, PLATFORM: SWITCH\n\n' +
-        '4. The Last of Us Part II\n' +
-        'METASCORE: 93, PLATFORM: PLAYSTATION 5\n\n' +
-        '5. Ori and the Will of the Wisps\n' +
-        'METASCORE: 93, PLATFORM: SWITCH\n\n' +
-        want_see_tops_text,
+        text=out_text + want_see_tops_text,
         reply_markup=reply_markup_keyboard
     )
     # Переход в состояние TOPS_QUESTION
@@ -123,30 +110,12 @@ def decade(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_TOPS)
-    # Здесь будет запрос данных с метакритики, пока что хардкод
+    top___by_year_decade = data_scraping.get_top_50_for_decade()
+    out_text = ''
+    for game in top___by_year_decade[:10]:
+        out_text += game.get_string_without_date() + "\n"
     query.edit_message_text(
-        text=
-        '1.	Super Mario Galaxy 2\n' +
-        'METASCORE: 97, PLATFORM: WII, YEAR: 2010\n\n' +
-        '2.	The Legend of Zelda: Breath of the Wild\n' +
-        'METASCORE: 97, PLATFORM: SWITCH, YEAR: 2017\n\n' +
-        '3.	Red Dead Redemption 2\n' +
-        'METASCORE: 97, PLATFORM: PLAYSTATION 4, YEAR: 2018\n\n' +
-        '4. Grand Theft Auto V\n' +
-        'METASCORE: 97, PLATFORM: PLAYSTATION 4, YEAR: 2014\n\n' +
-        '5.	Super Mario Odyssey\n' +
-        'METASCORE: 97, PLATFORM: SWITCH, YEAR: 2017\n\n' +
-        '6.	Mass Effect 2\n' +
-        'METASCORE: 96, PLATFORM: XBOX 360, YEAR: 2010\n\n' +
-        '7.	The Elder Scrolls V: Skyrim\n' +
-        'METASCORE: 96, PLATFORM: XBOX 360, YEAR: 2011\n\n' +
-        '8.	The Last of Us\n' +
-        'METASCORE: 95, PLATFORM: PLAYSTATION 3, YEAR: 2013\n\n' +
-        '9.	The Last of Us Remastered\n' +
-        'METASCORE: 95, PLATFORM: PLAYSTATION 4, YEAR: 2014\n\n' +
-        '10. Red Dead Redemption\n' +
-        'METASCORE: 95, PLATFORM: XBOX 360, YEAR: 2010\n\n' +
-        want_see_tops_text,
+        text=out_text + want_see_tops_text,
         reply_markup=reply_markup_keyboard
     )
     # Переход в состояние TOPS_QUESTION
