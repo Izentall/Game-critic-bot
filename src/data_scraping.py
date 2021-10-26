@@ -9,11 +9,11 @@ class Game(object):
         self.platform = platform
         self.date = date
 
-    def get_string(self):
-        return "Score: " + self.score + ", Name: " + self.name + ", Platform: " + self.platform + ", Date: " + self.date
-
     def get_string_without_date(self):
-        return "Score: " + self.score + ", Name: " + self.name + ", Platform: " + self.platform
+        return self.score + ", " + self.name + ", " + self.platform
+
+    def get_string(self):
+        return self.get_string_without_date() + ", Date: " + self.date
 
 
 def get_response(url):

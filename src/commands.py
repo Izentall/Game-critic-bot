@@ -110,7 +110,7 @@ def decade(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_TOPS)
-    top___by_year_decade = data_scraping.get_top_5_by_year(datetime.datetime.now().year - 1)
+    top___by_year_decade = data_scraping.get_top_50_for_decade()
     out_text = ''
     for game in top___by_year_decade[:10]:
         out_text += game.get_string_without_date() + "\n"
