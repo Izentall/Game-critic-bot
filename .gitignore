@@ -231,3 +231,4 @@ src/test/api_data.py
 # Default ignored files
 /shelf/
 /workspace.xml
+/src/temp_main.py
