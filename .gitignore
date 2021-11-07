@@ -232,3 +232,4 @@ src/test/api_data.py
 /shelf/
 /workspace.xml
 /src/temp_main.py
+.idea/inspectionProfiles/
