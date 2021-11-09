@@ -76,10 +76,7 @@ def current_year(update: Update, context: CallbackContext) -> int:
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_TOPS)
 
-    top___by_year = data_scraping.get_top_5_by_year(datetime.datetime.now().year)
-    out_text = ''
-    for game in top___by_year[:5]:
-        out_text += game.get_string_without_date() + "\n"
+    out_text = data_scraping.get_top_string(year=datetime.datetime.now().year)
     query.edit_message_text(
         text=out_text + want_see_tops_text,
         reply_markup=reply_markup_keyboard
@@ -93,10 +90,8 @@ def year_2020(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_TOPS)
-    top___by_last_year = data_scraping.get_top_5_by_year(datetime.datetime.now().year - 1)
-    out_text = ''
-    for game in top___by_last_year[:5]:
-        out_text += game.get_string_without_date() + "\n"
+
+    out_text = data_scraping.get_top_string(year=datetime.datetime.now().year - 1)
     query.edit_message_text(
         text=out_text + want_see_tops_text,
         reply_markup=reply_markup_keyboard
@@ -110,10 +105,7 @@ def decade(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_TOPS)
-    top___by_year_decade = data_scraping.get_top_50_for_decade()
-    out_text = ''
-    for game in top___by_year_decade[:10]:
-        out_text += game.get_string_without_date() + "\n"
+    out_text = data_scraping.get_top_string()
     query.edit_message_text(
         text=out_text + want_see_tops_text,
         reply_markup=reply_markup_keyboard

@@ -85,3 +85,17 @@ def get_top_10_by_platform(platform: Platform):
         year = games_container[i].find_all('div', class_='clamp-details')[1].span.text
         result.append(Game(score, name, platform.value, year))
     return result
+
+
+def get_top_string(year=None):
+    if year is not None:
+        top___by_year = get_top_5_by_year(year)
+        out_text = ''
+        for game in top___by_year[:5]:
+            out_text += game.get_string_without_date() + "\n"
+    else:
+        top___by_year_decade = get_top_50_for_decade()
+        out_text = ''
+        for game in top___by_year_decade[:10]:
+            out_text += game.get_string_without_date() + "\n"
+    return out_text
