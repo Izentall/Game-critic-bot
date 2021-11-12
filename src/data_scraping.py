@@ -1,5 +1,32 @@
 from bs4 import BeautifulSoup
 import requests
+from enum import Enum
+
+
+class Platform(Enum):
+    PC = 'pc'
+    Switch = 'switch'
+    PS4 = 'playstation-4'
+    PS5 = 'playstation-5'
+    XboxOne = 'xbox-one'
+    XboxSeries = 'xbox-series-x'
+
+
+class Game(object):
+    def __init__(self, score, name, platform, date):
+        self.score = score
+        self.name = name
+        self.platform = platform
+        self.date = date
+
+    def __str__(self):
+        return self.name + ' ' + self.platform + ' ' + self.date + ' ' + self.score
+
+    def get_string_without_date(self):
+        return self.score + ", " + self.name + ", " + self.platform
+
+    def get_string(self):
+        return self.get_string_without_date() + ", Date: " + self.date
 
 
 def get_response(url):
@@ -21,14 +48,14 @@ def get_top_5_by_year(year):
         name = games_container[i].find('a', class_='title').h3.text
         platform = games_container[i].find('div', class_='platform').find('span', class_='data').text.strip()
         date = games_container[i].find('div', class_='clamp-details').findAll('span')[2].text
-        result.append((score, name, platform, date))
+        result.append(Game(score, name, platform, date))
     return result
 
 
 def get_top_50_for_decade():
     url = "https://www.metacritic.com/feature/best-videogames-of-the-decade-2010s"
-    responce = get_response(url)
-    html_soup = BeautifulSoup(responce.text, 'html.parser')
+    response = get_response(url)
+    html_soup = BeautifulSoup(response.text, 'html.parser')
     games_container = html_soup.find('table', class_='bordertable')
     games_container = games_container.table.tbody.find_all('tr')
     result = []
@@ -40,26 +67,35 @@ def get_top_50_for_decade():
         platform = game[game.rfind('(') + 1:game.rfind(',')]
         game = game.replace(game_number, "")
         name = game[:game.rfind('(')].strip()
-        result.append((score, name, platform, year))
+        result.append(Game(score, name, platform, year))
     return result
 
-# def main():
-#     for game in get_top_5_by_year(2021):
-#         string = ""
-#         for attribute in game:
-#             string += attribute + " "
-#         print(string)
-#
-#     for game in get_top_5_by_year(2020):
-#         string = ""
-#         for attribute in game:
-#             string += attribute + " "
-#         print(string)
-#     for game in get_top_50_by_decade():
-#         string = ""
-#         for attribute in game:
-#             string += attribute + " "
-#         print(string)
-#
-# if __name__ == "__main__":
-#     main()
+
+def get_top_10_by_platform(platform: Platform):
+    basic_url = 'https://www.metacritic.com/game/'
+    basic_url += platform.value
+    response = get_response(basic_url)
+    html_soup = BeautifulSoup(response.text, 'html.parser')
+    games_container = html_soup.find('table', class_='clamp-list')
+    games_container = games_container.find_all('td', class_='clamp-summary-wrap')
+    result = []
+    for i in range(len(games_container)):
+        score = games_container[i].a.div.text
+        name = games_container[i].h3.text.strip()
+        year = games_container[i].find_all('div', class_='clamp-details')[1].span.text
+        result.append(Game(score, name, platform.value, year))
+    return result
+
+
+def get_top_string(year=None):
+    if year is not None:
+        top___by_year = get_top_5_by_year(year)
+        out_text = ''
+        for game in top___by_year[:5]:
+            out_text += game.get_string_without_date() + "\n"
+    else:
+        top___by_year_decade = get_top_50_for_decade()
+        out_text = ''
+        for game in top___by_year_decade[:10]:
+            out_text += game.get_string_without_date() + "\n"
+    return out_text
