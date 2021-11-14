@@ -1,6 +1,7 @@
-from bs4 import BeautifulSoup
-import requests
 from enum import Enum
+
+import requests
+from bs4 import BeautifulSoup
 
 
 class Platform(Enum):
@@ -22,8 +23,11 @@ class Game(object):
     def __str__(self):
         return self.name + ' ' + self.platform + ' ' + self.date + ' ' + self.score
 
+    def get_string_without_platform(self):
+        return self.score + ", " + self.name
+
     def get_string_without_date(self):
-        return self.score + ", " + self.name + ", " + self.platform
+        return self.get_string_without_platform() + ", " + self.platform
 
     def get_string(self):
         return self.get_string_without_date() + ", Date: " + self.date
@@ -98,4 +102,12 @@ def get_top_string(year=None):
         out_text = ''
         for game in top___by_year_decade[:10]:
             out_text += game.get_string_without_date() + "\n"
+    return out_text
+
+
+def get_top_platform_string(platform: Platform):
+    top_by_platform = get_top_10_by_platform(platform)
+    out_text = ''
+    for game in top_by_platform[:10]:
+        out_text += game.get_string_without_platform() + "\n"
     return out_text
