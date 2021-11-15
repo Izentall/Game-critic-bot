@@ -12,8 +12,11 @@ loudspeaker = u'\U0001F4E2'
 MENU, TOPS_SUBMENU, TOPS_QUESTION, PLATFORM_SUBMENU, PLAYSTATION_SUBMENU, \
     XBOX_SUBMENU, PLATFORM_QUESTION = range(7)
 # Переходы
-TOPS, PLATFORMS, CURRENT_YEAR, YEAR_2020, DECADE, MENU_BACKUP, \
-    PS4, PS5, XBOX_ONE, XBOX_SERIES = range(10)
+TOPS, PLATFORMS, CURRENT_YEAR, YEAR_2020, DECADE, \
+    PS4, PS5, XBOX_ONE, XBOX_SERIES, \
+    CURRENT_GAME, CURRENT_GAME_SUBMENU, ON_GAME, ON_GAME_QUESTION, CURRENT_DATA, \
+    PC_SECTION, SWITCH_SECTION, PS4_SECTION, PS5_SECTION, \
+    XBOX_ONE_SECTION, XBOX_SERIES_SECTION, YES_ON_GAME, NO_ON_GAME = range(22)
 # Платформы
 PC, PLAYSTATION, XBOX, SWITCH = range(4)
 # Варианты ответа для TOPS
@@ -41,6 +44,7 @@ keyboard_MENU = [
     [
         InlineKeyboardButton("Топы Игр", callback_data=str(TOPS)),
         InlineKeyboardButton("Платформы", callback_data=str(PLATFORMS)),
+        InlineKeyboardButton("Конкретная игра", callback_data=str(CURRENT_GAME))
     ]
 ]
 
@@ -83,6 +87,12 @@ keyboard_QUESTION_PLATFORMS = [
 
 keyboard_ON_GAME = [
     [
-        InlineKeyboardButton("Назад в меню", callback_data=str(MENU_BACKUP))
+    ]
+]
+
+keyboard_ON_GAME_QUESTION = [
+    [
+        InlineKeyboardButton("Да", callback_data=str(YES_ON_GAME)),
+        InlineKeyboardButton("Нет", callback_data=str(NO_ON_GAME)),
     ]
 ]

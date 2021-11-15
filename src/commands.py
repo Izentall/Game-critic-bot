@@ -1,17 +1,21 @@
 import logging
 
-from telegram import Update, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext
 import data_scraping
 import datetime
 
 from src.constants import (
     hand_emoji,
-    MENU, TOPS_SUBMENU, TOPS_QUESTION, PLATFORM_SUBMENU, PLATFORM_QUESTION, PLAYSTATION_SUBMENU,
+    MENU, TOPS_SUBMENU, TOPS_QUESTION, PLATFORM_SUBMENU, PLATFORM_QUESTION,
+    PLAYSTATION_SUBMENU, XBOX_SUBMENU,
     greetings_text, using_buttons_text, select_top_text, select_platform_text,
     want_see_tops_text, want_see_platforms_text, help_text,
     keyboard_MENU, keyboard_TOPS, keyboard_PLATFORMS, keyboard_QUESTION_TOPS,
-    keyboard_QUESTION_PLATFORMS, keyboard_ON_GAME, keyboard_PLAYSTATION_SUBMENU, keyboard_XBOX_SUBMENU, XBOX_SUBMENU,
+    keyboard_QUESTION_PLATFORMS, keyboard_ON_GAME, keyboard_PLAYSTATION_SUBMENU, keyboard_XBOX_SUBMENU,
+    PC_SECTION, SWITCH_SECTION, PS4_SECTION, PS5_SECTION, XBOX_ONE_SECTION, XBOX_SERIES_SECTION,
+    ON_GAME, ON_GAME_QUESTION, CURRENT_GAME_SUBMENU, CURRENT_DATA, NO_ON_GAME,
+    keyboard_ON_GAME_QUESTION
 )
 
 # Логирование
@@ -70,6 +74,17 @@ def platforms(update: Update, context: CallbackContext) -> int:
     return PLATFORM_SUBMENU
 
 
+def current_game(update: Update, context: CallbackContext) -> int:
+    """Показать информацию о поиске конкретной игры"""
+    query = update.callback_query
+    # Сохраняем ввод названия игры
+    context.user_data[CURRENT_DATA] = query.data
+    query.answer()
+    query.edit_message_text(text='Напишите название интересующей вас игры!')
+    # Переход в состояние CURRENT_GAME_SUBMENU
+    return CURRENT_GAME_SUBMENU
+
+
 def current_year(update: Update, context: CallbackContext) -> int:
     """Информация по топу игр этого года, затем показать новый выбор кнопок"""
     query = update.callback_query
@@ -119,20 +134,9 @@ def pc_func(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
-    # Здесь будет запрос данных с метакритики, пока что хардкод
+    out_text = data_scraping.get_top_platform_string(data_scraping.Platform.PC)
     query.edit_message_text(
-        text=
-        '1. OPUS: Echo of Starsong\n' +
-        'METASCORE: 91\n\n' +
-        '2. Psychonauts 2\n' +
-        'METASCORE: 89\n\n' +
-        '3. Streets of Rage 4: Mr. X Nightmare\n' +
-        'METASCORE: 88\n\n' +
-        '4. Deathloop\n' +
-        'METASCORE: 88\n\n' +
-        '5. Townscaper\n' +
-        'METASCORE: 86\n\n' +
-        want_see_platforms_text,
+        text='TOP PC Games:\n' + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
     # Переход в состояние PLATFORM_QUESTION
@@ -154,20 +158,9 @@ def ps4_func(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
-    # Здесь будет запрос данных с метакритики, пока что хардкод
+    out_text = data_scraping.get_top_platform_string(data_scraping.Platform.PS4)
     query.edit_message_text(
-        text=
-        '1. Synth Riders\n' +
-        'METASCORE: 89\n\n' +
-        '2. Quake Remastered\n' +
-        'METASCORE: 88\n\n' +
-        '3. Psychonauts 2\n' +
-        'METASCORE: 87\n\n' +
-        '4. Flynn: Son of Crimson\n' +
-        'METASCORE: 85\n\n' +
-        '5. Castlevania Advance Collection\n' +
-        'METASCORE: 84\n\n' +
-        want_see_platforms_text,
+        text='TOP PlayStation 4 Games:\n' + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
     # Переход в состояние PLATFORM_QUESTION
@@ -179,20 +172,9 @@ def ps5_func(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
-    # Здесь будет запрос данных с метакритики, пока что хардкод
+    out_text = data_scraping.get_top_platform_string(data_scraping.Platform.PS5)
     query.edit_message_text(
-        text=
-        '1. Hades\n' +
-        'METASCORE: 93\n\n' +
-        '2. Deathloop\n' +
-        'METASCORE: 88\n\n' +
-        '3. Ghost of Tsushima: Director\'s Cut\n' +
-        'METASCORE: 88\n\n' +
-        '4. Bonfire Peaks\n' +
-        'METASCORE: 88\n\n' +
-        '5. Tales of Arise\n' +
-        'METASCORE: 87\n\n' +
-        want_see_platforms_text,
+        text='TOP PlayStation 5 Games:\n' + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
     # Переход в состояние PLATFORM_QUESTION
@@ -214,20 +196,9 @@ def xbox_one_func(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
-    # Здесь будет запрос данных с метакритики, пока что хардкод
+    out_text = data_scraping.get_top_platform_string(data_scraping.Platform.XboxOne)
     query.edit_message_text(
-        text=
-        '1. Psychonauts 2\n' +
-        'METASCORE: 91\n\n' +
-        '2. The Forgotten City\n' +
-        'METASCORE: 88\n\n' +
-        '3. UnMetal\n' +
-        'METASCORE: 87\n\n' +
-        '4. Sam & Max Save the World Remastered\n' +
-        'METASCORE: 84\n\n' +
-        '5. Insurgency: Sandstorm\n' +
-        'METASCORE: 84\n\n' +
-        want_see_platforms_text,
+        text='TOP XboxOne Games:\n' + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
     # Переход в состояние PLATFORM_QUESTION
@@ -239,20 +210,9 @@ def xbox_series_func(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
-    # Здесь будет запрос данных с метакритики, пока что хардкод
+    out_text = data_scraping.get_top_platform_string(data_scraping.Platform.XboxSeries)
     query.edit_message_text(
-        text=
-        '1. Hades\n' +
-        'METASCORE: 93\n\n' +
-        '2. Microsoft Flight Simulator\n' +
-        'METASCORE: 90\n\n' +
-        '3. Fuga: Melodies of Steel\n' +
-        'METASCORE: 89\n\n' +
-        '4. Psychonauts 2\n' +
-        'METASCORE: 87\n\n' +
-        '5. Tales of Arise\n' +
-        'METASCORE: 87\n\n' +
-        want_see_platforms_text,
+        text='TOP XboxSeries X Games:\n' + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
     # Переход в состояние PLATFORM_QUESTION
@@ -264,20 +224,9 @@ def switch_func(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
-    # Здесь будет запрос данных с метакритики, пока что хардкод
+    out_text = data_scraping.get_top_platform_string(data_scraping.Platform.Switch)
     query.edit_message_text(
-        text=
-        '1. A Monster\'s Expedition\n' +
-        'METASCORE: 92\n\n' +
-        '2. Spelunky 2\n' +
-        'METASCORE: 92\n\n' +
-        '3. Streets of Rage 4: Mr. X Nightmare\n' +
-        'METASCORE: 88\n\n' +
-        '4. Metroid Dread\n' +
-        'METASCORE: 88\n\n' +
-        '5. Quake Remastered\n' +
-        'METASCORE: 87\n\n' +
-        want_see_platforms_text,
+        text='TOP Switch Games:\n' + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
     # Переход в состояние PLATFORM_QUESTION
@@ -289,11 +238,202 @@ def help_func(update: Update, context: CallbackContext):
     update.message.reply_text(text=help_text)
 
 
-def echo_func(update: Update, context: CallbackContext):
-    """Возвращает введенное сообщение"""
+def game_info_func(update: Update, context: CallbackContext) -> int:
+    """Возвращает информацию по конкретной игре"""
+    user_data = context.user_data
+    # if (update.message.text == Filters.command):
+    #   update.message.reply_text('No commands in name!')
+    user_data[CURRENT_DATA] = update.message.text
+    game_name = user_data[CURRENT_DATA]
+    # Тут будет вызов функции поиска игры на сайте, пока что хардкод
+    # if (game_name.search())
+    # else reply_text('Игра не найдена в поиске\n')
+    # Тут будет вызов функции поиска платформ игры, если она есть в поиске
+    # game_platforms = game_name.get_platforms_names()
+    game_platforms = ['PC', 'PS4', 'PS5', 'XboxOne', 'XboxSeries']
+    inline_keyboard_platform_buttons(game_platforms)
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME)
-    text = update.message.text
-    update.message.reply_text(text, reply_markup=reply_markup_keyboard)
+    update.message.reply_text(game_name, reply_markup=reply_markup_keyboard)
+    # Переход в состояние ON_GAME
+    return ON_GAME
+
+
+def game_info_again(update: Update, context: CallbackContext) -> int:
+    """Возвращает информацию по конкретной игре при повторном вызове"""
+    user_data = context.user_data
+    query = update.callback_query
+    query.answer()
+    game_name = user_data[CURRENT_DATA]
+    reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME)
+    query.edit_message_text(text=game_name, reply_markup=reply_markup_keyboard)
+    # Переход в состояние ON_GAME
+    return ON_GAME
+
+
+def get_platform_button(platform_button: str):
+    """Возвращает ID кнопки по строке"""
+    if platform_button == "PC":
+        return PC_SECTION
+    elif platform_button == "Switch":
+        return SWITCH_SECTION
+    elif platform_button == "PS4":
+        return PS4_SECTION
+    elif platform_button == "PS5":
+        return PS5_SECTION
+    elif platform_button == "XboxOne":
+        return XBOX_ONE_SECTION
+    elif platform_button == "XboxSeries":
+        return XBOX_SERIES_SECTION
+
+
+def inline_keyboard_platform_buttons(game_platforms: []):
+    # Очистка клавиатуры
+    keyboard_ON_GAME.clear()
+    for platform_button in game_platforms:
+        keyboard_ON_GAME.insert(
+            0,
+            [InlineKeyboardButton(
+                platform_button, callback_data=str(get_platform_button(platform_button))
+            )]
+        )
+
+
+def pc_section(update: Update, context: CallbackContext):
+    """Возвращает информацию по конкретной игре на PC"""
+    query = update.callback_query
+    query.answer()
+    game_name = context.user_data[CURRENT_DATA] + ' - PC\n'
+    reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME_QUESTION)
+    # Тут будет запрос информации об игре с PC платформы, пока что хардкод
+    out_text = 'Metascore: 86 - based on 92 Critic Reviews\n' + \
+               'User Score: 7.1 - based on 30182 Ratings\n' + \
+               'Developer: CD Projekt Red Studio' + \
+               'Genre(s): Action RPG, Role-Playing, Action RPG\n' + \
+               '# of players: No Online Multiplayer\n' + \
+               'Rating: M\n'
+    # out_text = data_scraping.get_game_info_from_pc()
+    query.edit_message_text(
+        text=game_name + out_text + want_see_platforms_text,
+        reply_markup=reply_markup_keyboard
+    )
+    # Переход в состояние ON_GAME_QUESTION
+    return ON_GAME_QUESTION
+
+
+def switch_section(update: Update, context: CallbackContext):
+    """Возвращает информацию по конкретной игре на Switch"""
+    query = update.callback_query
+    query.answer()
+    game_name = context.user_data[CURRENT_DATA] + ' - Switch\n'
+    reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME_QUESTION)
+    # Тут будет запрос информации об игре с PC платформы, пока что хардкод
+    out_text = 'Metascore: 80 - based on 32 Critic Reviews\n' + \
+               'User Score: 6.9 - based on 20178 Ratings\n' + \
+               'Developer: CD Projekt Red Studio' + \
+               'Genre(s): Action RPG, Role-Playing, Action RPG\n' + \
+               '# of players: No Online Multiplayer\n' + \
+               'Rating: M\n'
+    # out_text = data_scraping.get_game_info_from_pc()
+    query.edit_message_text(
+        text=game_name + out_text + want_see_platforms_text,
+        reply_markup=reply_markup_keyboard
+    )
+    # Переход в состояние ON_GAME_QUESTION
+    return ON_GAME_QUESTION
+
+
+def ps4_section(update: Update, context: CallbackContext):
+    """Возвращает информацию по конкретной игре на PlayStation 4"""
+    query = update.callback_query
+    query.answer()
+    game_name = context.user_data[CURRENT_DATA] + ' - PS4\n'
+    reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME_QUESTION)
+    # Тут будет запрос информации об игре с PC платформы, пока что хардкод
+    out_text = 'Metascore: 57 - based on 38 Critic Reviews\n' + \
+               'User Score: 3.7 - based on 10201 Ratings\n' + \
+               'Developer: CD Projekt Red Studio' + \
+               'Genre(s): Action RPG, Role-Playing, Action RPG\n' + \
+               '# of players: No Online Multiplayer\n' + \
+               'Rating: M\n'
+    # out_text = data_scraping.get_game_info_from_pc()
+    query.edit_message_text(
+        text=game_name + out_text + want_see_platforms_text,
+        reply_markup=reply_markup_keyboard
+    )
+    # Переход в состояние ON_GAME_QUESTION
+    return ON_GAME_QUESTION
+
+
+def ps5_section(update: Update, context: CallbackContext):
+    """Возвращает информацию по конкретной игре на PlayStation 5"""
+    query = update.callback_query
+    query.answer()
+    game_name = context.user_data[CURRENT_DATA] + ' - PS5\n'
+    reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME_QUESTION)
+    # Тут будет запрос информации об игре с PC платформы, пока что хардкод
+    out_text = 'Metascore: 85 - based on 65 Critic Reviews\n' + \
+               'User Score: 5.7 - based on 45143 Ratings\n' + \
+               'Developer: CD Projekt Red Studio' + \
+               'Genre(s): Action RPG, Role-Playing, Action RPG\n' + \
+               '# of players: No Online Multiplayer\n' + \
+               'Rating: M\n'
+    # out_text = data_scraping.get_game_info_from_pc()
+    query.edit_message_text(
+        text=game_name + out_text + want_see_platforms_text,
+        reply_markup=reply_markup_keyboard
+    )
+    # Переход в состояние ON_GAME_QUESTION
+    return ON_GAME_QUESTION
+
+
+def xbox_one_section(update: Update, context: CallbackContext):
+    """Возвращает информацию по конкретной игре на XboxOne"""
+    query = update.callback_query
+    query.answer()
+    game_name = context.user_data[CURRENT_DATA] + ' - XboxOne\n'
+    reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME_QUESTION)
+    # Тут будет запрос информации об игре с PC платформы, пока что хардкод
+    out_text = 'Metascore: 61 - based on 16 Critic Reviews\n' + \
+               'User Score: 4.9 - based on 4079 Ratings\n' + \
+               'Developer: CD Projekt Red Studio' + \
+               'Genre(s): Action RPG, Role-Playing, Action RPG\n' + \
+               '# of players: No Online Multiplayer\n' + \
+               'Rating: M\n'
+    # out_text = data_scraping.get_game_info_from_pc()
+    query.edit_message_text(
+        text=game_name + out_text + want_see_platforms_text,
+        reply_markup=reply_markup_keyboard
+    )
+    # Переход в состояние ON_GAME_QUESTION
+    return ON_GAME_QUESTION
+
+
+def xbox_series_section(update: Update, context: CallbackContext):
+    """Возвращает информацию по конкретной игре на XboxSeries X"""
+    query = update.callback_query
+    query.answer()
+    game_name = context.user_data[CURRENT_DATA] + ' - XboxSeries X\n'
+    reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME_QUESTION)
+    # Тут будет запрос информации об игре с PC платформы, пока что хардкод
+    out_text = 'Metascore: 71 - based on 49 Critic Reviews\n' + \
+               'User Score: 8.9 - based on 6589 Ratings\n' + \
+               'Developer: CD Projekt Red Studio' + \
+               'Genre(s): Action RPG, Role-Playing, Action RPG\n' + \
+               '# of players: No Online Multiplayer\n' + \
+               'Rating: M\n'
+    # out_text = data_scraping.get_game_info_from_pc()
+    query.edit_message_text(
+        text=game_name + out_text + want_see_platforms_text,
+        reply_markup=reply_markup_keyboard
+    )
+    # Переход в состояние ON_GAME_QUESTION
+    return ON_GAME_QUESTION
+
+
+def end_on_game(update: Update, context: CallbackContext) -> int:
+    """End on game conversation and return to main conversation."""
+    new_start(update, context)
+    return NO_ON_GAME
 
 
 def new_start(update: Update, context: CallbackContext):
