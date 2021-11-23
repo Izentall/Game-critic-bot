@@ -39,12 +39,13 @@ def get_response(url):
     return response
 
 
-def get_top_5_by_year(year):
-    if year < 1916 or year > 2021:
-        raise ValueError('Invalid year. Must be between 1916 and 2021. Received year: ' + str(year))
-    basic_url = "https://www.metacritic.com/browse/games/score/metascore/year/all/filtered?year_selected=%s&distribution=&sort=desc&view=detailed"
-    response = get_response(basic_url % str(year))
-    html_soup = BeautifulSoup(response.text, 'html.parser')
+def get_top_5_by_year(year, text=None):
+    if text is None:
+        if year < 1916 or year > 2021:
+            raise ValueError('Invalid year. Must be between 1916 and 2021. Received year: ' + str(year))
+        basic_url = "https://www.metacritic.com/browse/games/score/metascore/year/all/filtered?year_selected=%s&distribution=&sort=desc&view=detailed"
+        text = get_response(basic_url % str(year)).text
+    html_soup = BeautifulSoup(text, 'html.parser')
     games_container = html_soup.find_all('td', class_='clamp-summary-wrap')[:5]
     result = []
     for i in range(len(games_container)):
@@ -56,10 +57,11 @@ def get_top_5_by_year(year):
     return result
 
 
-def get_top_50_for_decade():
-    url = "https://www.metacritic.com/feature/best-videogames-of-the-decade-2010s"
-    response = get_response(url)
-    html_soup = BeautifulSoup(response.text, 'html.parser')
+def get_top_50_for_decade(text=None):
+    if text is None:
+        url = "https://www.metacritic.com/feature/best-videogames-of-the-decade-2010s"
+        text = get_response(url).text
+    html_soup = BeautifulSoup(text, 'html.parser')
     games_container = html_soup.find('table', class_='bordertable')
     games_container = games_container.table.tbody.find_all('tr')
     result = []
@@ -75,11 +77,12 @@ def get_top_50_for_decade():
     return result
 
 
-def get_top_10_by_platform(platform: Platform):
-    basic_url = 'https://www.metacritic.com/game/'
-    basic_url += platform.value
-    response = get_response(basic_url)
-    html_soup = BeautifulSoup(response.text, 'html.parser')
+def get_top_10_by_platform(platform: Platform, text=None):
+    if text is None:
+        basic_url = 'https://www.metacritic.com/game/'
+        basic_url += platform.value
+        text = get_response(basic_url).text
+    html_soup = BeautifulSoup(text, 'html.parser')
     games_container = html_soup.find('table', class_='clamp-list')
     games_container = games_container.find_all('td', class_='clamp-summary-wrap')
     result = []
