@@ -87,6 +87,56 @@ def get_top_10_by_platform(platform: Platform):
     return result
 
 
+''' Query is a string as it was typed in chat-bot input, with whitespaces, lower/upper cases etc.'''
+
+
+def get_result_of_query(query: str):
+    if query == "":
+        raise ValueError("Empty string")
+    search_url = "https://www.metacritic.com/search/game/{}/results"
+    words = query.split()
+    query_word_delimiter = "%20"
+    query_url_style = ""
+    for word in words:
+        query_url_style += word + query_word_delimiter
+    query_url_style = query_url_style[:-3]
+    search_url = search_url.format(query_url_style)
+
+    response = get_response(search_url)
+    html_soup = BeautifulSoup(response.text, 'html.parser')
+    games_container = html_soup.find('ul', class_='search_results module')
+    games_container = games_container.find_all('li')
+    result = []
+    for game in games_container:
+        name = game.a.text.strip()
+        score = game.span.text.strip()
+        platform = game.p.span.text.strip()
+        year = game.p.text.split()[2:]
+
+        if len(year) == 1 and year[0] == 'TBA':
+            continue
+
+        if len(year) == 2:
+            year = year[0] + ' ' + year[1]
+        else:
+            year = year[0]
+
+        if platform == 'PC':
+            result.append(Game(score, name, 'pc', year))
+        if platform == 'XONE':
+            result.append(Game(score, name, 'xbox-one', year))
+        if platform == 'PS4':
+            result.append(Game(score, name, 'playstation-4', year))
+        if platform == 'PS5':
+            result.append(Game(score, name, 'playstation-5', year))
+        if platform == 'Switch':
+            result.append(Game(score, name, 'switch', year))
+        if platform == 'XBSX':
+            result.append(Game(score, name, 'xbox-series-x', year))
+
+    return result
+
+
 def get_top_string(year=None):
     if year is not None:
         top___by_year = get_top_5_by_year(year)
