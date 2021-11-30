@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
-from src.data_scraping import get_top_5_by_year, get_top_50_for_decade
-from src.test.test_constatns import TOP_5_OF_2021, TOP_5_OF_2020, TOP_10_OF_DECADE
+from src.data_scraping import get_top_5_by_year, get_top_50_for_decade, get_top_10_by_platform, Platform
+from src.test.test_constatns import TOP_5_OF_2021, TOP_5_OF_2020, TOP_10_OF_DECADE, TOP_10_BY_PLATFORM
 
 
 @pytest.mark.parsing
@@ -29,3 +29,13 @@ def test_get_top_50_for_decade():
     for game in top___by_year_decade[:10]:
         out_text += game.get_string_without_date() + "\n"
     assert out_text[:-1] == TOP_10_OF_DECADE
+
+
+@pytest.mark.parsing
+def test_get_top_10_by_platform():
+    file = open(Path(Path.cwd(), 'src', 'test', 'html_pages', 'top_10_by_platform.html'), 'r', encoding='utf-8')
+    top_by_platform = get_top_10_by_platform(Platform('pc'), text=file.read())
+    out_text = ''
+    for game in top_by_platform[:10]:
+        out_text += game.get_string_without_platform() + "\n"
+    assert out_text[:-1] == TOP_10_BY_PLATFORM
