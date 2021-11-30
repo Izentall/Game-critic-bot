@@ -13,7 +13,7 @@ from src.constants import (greetings_text, using_buttons_text, select_top_text, 
                            keyboard_QUESTION_PLATFORMS, want_see_tops_text, keyboard_PLAYSTATION_SUBMENU,
                            keyboard_XBOX_SUBMENU)
 
-
+@pytest.mark.bot
 @mark.asyncio
 async def test_start(client: TelegramClient):
     # Create a conversation
@@ -35,6 +35,7 @@ async def test_start(client: TelegramClient):
         await check_keyboard(resp, keyboard_MENU, using_buttons_text)
 
 
+@pytest.mark.bot
 @pytest.mark.parametrize(
     'button_index, year',
     [
@@ -97,6 +98,7 @@ async def test_tops(client: TelegramClient, button_index: int, year):
         await check_keyboard(resp, keyboard_MENU, using_buttons_text)
 
 
+@pytest.mark.bot
 @pytest.mark.parametrize(
     'button_index, submenu',
     [
