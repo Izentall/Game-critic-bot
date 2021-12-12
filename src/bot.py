@@ -7,7 +7,7 @@ from telegram.ext import (
 )
 
 from authorization import token
-from src.commands import (
+from commands import (
     start, start_over, help_func, game_info_func,
     tops, platforms, current_game,
     current_year, year_2020, decade,
@@ -16,7 +16,7 @@ from src.commands import (
     pc_section, switch_section, ps4_section, ps5_section, xbox_one_section,
     xbox_series_section, game_info_again, end_on_game,
 )
-from src.constants import (
+from constants import (
     MENU, TOPS_SUBMENU, TOPS_QUESTION, PLATFORM_SUBMENU, PLATFORM_QUESTION, CURRENT_GAME,
     TOPS, PLATFORMS, CURRENT_YEAR, YEAR_2020, DECADE, ON_GAME, ON_GAME_QUESTION,
     PC, PLAYSTATION, XBOX, SWITCH, CURRENT_GAME_SUBMENU,
