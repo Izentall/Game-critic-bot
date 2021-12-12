@@ -25,4 +25,4 @@ jobs:
       - name: Run tests with pytest
         run: |
           cd src/test/
-          pytest -m persing
+          pytest -m parsing
