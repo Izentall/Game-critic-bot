@@ -16,7 +16,8 @@ TOPS, PLATFORMS, CURRENT_YEAR, YEAR_2020, DECADE, \
     PS4, PS5, XBOX_ONE, XBOX_SERIES, \
     CURRENT_GAME, CURRENT_GAME_SUBMENU, ON_GAME, ON_GAME_QUESTION, CURRENT_DATA, \
     PC_SECTION, SWITCH_SECTION, PS4_SECTION, PS5_SECTION, \
-    XBOX_ONE_SECTION, XBOX_SERIES_SECTION, YES_ON_GAME, NO_ON_GAME = range(22)
+    XBOX_ONE_SECTION, XBOX_SERIES_SECTION, YES_ON_GAME, NO_ON_GAME, \
+    ON_SEARCH, SEARCH = range(24)
 # Платформы
 PC, PLAYSTATION, XBOX, SWITCH = range(4)
 # Варианты ответа для TOPS
@@ -39,13 +40,14 @@ help_text = "/start - начать разговор\n" \
             "Чтобы получить информацию, просто напиши название игры\n" \
             "или воспользуйся кнопками меню!"
 
+# Список текстов кнопок для поиска игр
+game_search_list = []
+
 # Клавиатуры кнопок
 keyboard_MENU = [
-    [
-        InlineKeyboardButton("Топы Игр", callback_data=str(TOPS)),
-        InlineKeyboardButton("Платформы", callback_data=str(PLATFORMS)),
-        InlineKeyboardButton("Конкретная игра", callback_data=str(CURRENT_GAME))
-    ]
+    [InlineKeyboardButton("Топы Игр", callback_data=str(TOPS))],
+    [InlineKeyboardButton("Платформы", callback_data=str(PLATFORMS))],
+    [InlineKeyboardButton("Конкретная игра", callback_data=str(CURRENT_GAME))],
 ]
 
 keyboard_TOPS = [
@@ -85,8 +87,19 @@ keyboard_QUESTION_PLATFORMS = [
     ]
 ]
 
+keyboard_ON_SEARCH = [
+    [
+    ]
+]
+
 keyboard_ON_GAME = [
     [
+    ]
+]
+
+keyboard_ONLY_BACK = [
+    [
+        InlineKeyboardButton("Назад в Меню", callback_data=str(NO_ON_GAME))
     ]
 ]
 

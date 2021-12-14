@@ -98,8 +98,15 @@ def get_top_10_by_platform(platform: Platform, text=None):
 
 
 def get_result_of_query(query: str):
+    result = []
+
     if query == "":
-        raise ValueError("Empty string")
+        return result
+        # raise ValueError("Empty string")
+
+    if query.startswith('/'):
+        return result
+
     search_url = "https://www.metacritic.com/search/game/{}/results"
     words = query.split()
 
@@ -113,7 +120,8 @@ def get_result_of_query(query: str):
     html_soup = BeautifulSoup(response.text, 'html.parser')
 
     if html_soup.find('div', class_='body').p.text.strip() == 'No search results found.':
-        raise ValueError("No search results")
+        return result
+        # raise ValueError("No search results")
 
     pages_container = html_soup.find('ul', class_='pages')
     games_container = []
@@ -126,8 +134,6 @@ def get_result_of_query(query: str):
             response = get_response(search_url + '?page=' + str(i))
             html_soup = BeautifulSoup(response.text, 'html.parser')
             games_container.append(html_soup.find('ul', class_='search_results module'))
-
-    result = []
 
     for games in games_container:
         games_container_local = games.find_all('li')
@@ -160,8 +166,6 @@ def get_result_of_query(query: str):
                 if platform == 'XBSX':
                     result.append(Game(score, name, 'xbox-series-x', year))
 
-    if len(result) == 0:
-        raise ValueError("No search results")
     return result
 
 
