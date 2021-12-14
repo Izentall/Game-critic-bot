@@ -1,3 +1,4 @@
+import os
 from enum import Enum
 
 import requests
@@ -19,6 +20,7 @@ class Game(object):
         self.name = name
         self.platform = platform
         self.date = date
+        self.url = ''
 
     def __str__(self):
         return self.name + ' ' + self.platform + ' ' + self.date + ' ' + self.score
@@ -142,7 +144,8 @@ def get_result_of_query(query: str):
             score = game.span.text.strip()
             platform = game.p.span.text.strip()
             year = game.p.text.split()[2:]
-
+            url = game.find('div', class_='main_stats').h3.a
+            url = url.attrs['href']
             if len(year) == 1 and year[0] == 'TBA':
                 continue
 
@@ -165,8 +168,39 @@ def get_result_of_query(query: str):
                     result.append(Game(score, name, 'switch', year))
                 if platform == 'XBSX':
                     result.append(Game(score, name, 'xbox-series-x', year))
+                result[-1].url = url
 
     return result
+
+
+def get_description_score_details_by_game(game: Game):
+    if game.url == '':
+        return ''
+
+    url = 'https://www.metacritic.com' + game.url
+    response = get_response(url)
+    html_soup = BeautifulSoup(response.text, 'html.parser')
+    res = html_soup.find('div', class_='section product_details')
+    res1 = res.find('div', class_='details side_details').ul
+    desc_container = res1.text
+    desc_container = os.linesep.join([s for s in desc_container.splitlines() if s])
+    desc_container = desc_container.splitlines()
+    desc_text = ''
+    for i in range(len(desc_container) - 1):
+        if ':' in desc_container[i]:
+            if desc_text != '':
+                desc_text += '\n'
+            desc_text += " ".join(desc_container[i].split()).strip()
+        else:
+            desc_text += ' ' + " ".join(desc_container[i].split()).strip()
+
+    temp = html_soup.find('div', class_='userscore_wrap feature_userscore')
+    user_score = temp.a.div.text.strip()
+    user_reviews = temp.p.a.text.strip()
+    critic_reviews = html_soup.find('div', class_='score_summary metascore_summary')
+    critic_reviews = critic_reviews.find('div', class_='summary').p.a.span.text.strip()
+
+    return desc_text, user_score, user_reviews, critic_reviews
 
 
 def get_top_string(year=None):
