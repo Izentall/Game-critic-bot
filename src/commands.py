@@ -5,7 +5,7 @@ from telegram.ext import CallbackContext
 import data_scraping
 import datetime
 
-from src.constants import (
+from constants import (
     hand_emoji,
     MENU, TOPS_SUBMENU, TOPS_QUESTION, PLATFORM_SUBMENU, PLATFORM_QUESTION,
     PLAYSTATION_SUBMENU, XBOX_SUBMENU,
