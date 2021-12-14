@@ -109,12 +109,16 @@ def get_result_of_query(query: str):
         raise ValueError("No search results")
 
     pages_container = html_soup.find('ul', class_='pages')
-
     games_container = []
-    for i in range(len(pages_container)):
-        response = get_response(search_url + '?page=' + str(i))
+    if pages_container is None:
+        response = get_response(search_url)
         html_soup = BeautifulSoup(response.text, 'html.parser')
         games_container.append(html_soup.find('ul', class_='search_results module'))
+    else:
+        for i in range(len(pages_container)):
+            response = get_response(search_url + '?page=' + str(i))
+            html_soup = BeautifulSoup(response.text, 'html.parser')
+            games_container.append(html_soup.find('ul', class_='search_results module'))
 
     result = []
 
