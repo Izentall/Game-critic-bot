@@ -1,4 +1,6 @@
+import json
 import os
+import urllib.request
 from enum import Enum
 
 import requests
@@ -175,7 +177,6 @@ def get_result_of_query(query: str):
                     result.append(Game(score, name, 'xbox-series-x', year))
                     result[-1].url = url
 
-
     return result
 
 
@@ -212,6 +213,77 @@ def get_description_score_details_by_game(game: Game):
         critic_reviews = -1
 
     return desc_text, user_score, user_reviews, critic_reviews
+
+
+def get_game_image(game: Game):
+    if game.url == '':
+        return 0
+
+    print(game.name + ' ' + game.platform)
+    url = 'https://www.metacritic.com' + game.url
+    response = get_response(url)
+    html_soup = BeautifulSoup(response.text, 'html.parser')
+    res = html_soup.find('div', class_='product_image large_image must_play')
+    all_images = [img["src"] for img in res.find_all('img', {'class': 'product_image large_image'})]
+    image_url = all_images[0]
+    print('Ссылка на картинку с metacritic: ')
+    print(image_url)
+
+    download_image(image_url, 'images/', 'game_metacritic_icon')
+
+    file_path = 'images/game_metacritic_icon.jpg'
+    search_url = 'https://yandex.ru/images/search'
+    files = {'upfile': ('blob', open(file_path, 'rb'), 'image/jpeg')}
+    params = {'rpt': 'imageview', 'format': 'json',
+              'request': '{"blocks":[{"block":"b-page_type_search-by-image__link"}]}'}
+    response = requests.post(search_url, params=params, files=files)
+    query_string = json.loads(response.content)['blocks'][0]['params']['url']
+    img_search_url = search_url + '?' + query_string
+    print('Ссылка на картинку поиска в Yandex: ')
+    print(img_search_url)
+
+    soup = BeautifulSoup(requests.get(img_search_url).text, 'html.parser')
+    similar = soup.find_all('div', class_='CbirSimilar-Thumb')
+    img_tag = similar[0].find('a').get('href')
+
+    img_url = 'https://yandex.ru' + img_tag
+    print('Ссылка на первую в поиске картинку:')
+    print(img_url)
+
+    s = BeautifulSoup(requests.get(img_url).text, 'html.parser')
+
+    try:
+        # print('here 1')
+        resp2 = s.find('div', class_='serp-item serp-item_type_search serp-item_group_search serp-item_pos_0 '
+                                     'serp-item_selected_yes serp-item_scale_yes justifier__item i-bem').get_attribute_list(
+            'data-bem')
+    except Exception as e:
+        # print('here 2')
+        resp2 = s.find('div', class_='serp-item serp-item_type_search serp-item_group_search serp-item_pos_0 '
+                                     'serp-item_scale_yes justifier__item i-bem').get_attribute_list(
+            'data-bem')
+
+    final_url = json.loads(resp2[0])['serp-item']['preview'][0]['url']
+    print('Итоговая ссылка на картинку: ')
+    print(final_url)
+
+    is_downloaded = download_image(final_url, 'images/', 'game_image')
+
+    # Если сайт запрещает скачивать, берем картинку с metacritic
+    if not is_downloaded:
+        with open('images/game_metacritic_icon.jpg', 'rb') as image:
+            copy = image.read()
+        with open('images/game_image.jpg', 'wb') as file:
+            file.write(copy)
+
+
+def download_image(url, file_path, file_name):
+    full_path = file_path + file_name + '.jpg'
+    try:
+        urllib.request.urlretrieve(url, full_path)
+        return True
+    except Exception as e:
+        return False
 
 
 def get_top_string(year=None):

@@ -1,11 +1,12 @@
 import ast
+import datetime
 import logging
 
+import telegram
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext
-import data_scraping
-import datetime
 
+import data_scraping
 from constants import (
     hand_emoji,
     MENU, TOPS_SUBMENU, TOPS_QUESTION, PLATFORM_SUBMENU, PLATFORM_QUESTION,
@@ -16,7 +17,7 @@ from constants import (
     keyboard_QUESTION_PLATFORMS, keyboard_ON_SEARCH, keyboard_PLAYSTATION_SUBMENU, keyboard_XBOX_SUBMENU,
     PC_SECTION, SWITCH_SECTION, PS4_SECTION, PS5_SECTION, XBOX_ONE_SECTION, XBOX_SERIES_SECTION,
     ON_GAME, ON_GAME_QUESTION, CURRENT_GAME_SUBMENU, CURRENT_DATA, NO_ON_GAME,
-    keyboard_ON_GAME_QUESTION, keyboard_ONLY_BACK, ON_SEARCH, SEARCH, keyboard_ON_GAME,
+    keyboard_ON_GAME_QUESTION, keyboard_ONLY_BACK, ON_SEARCH, keyboard_ON_GAME,
 )
 
 # Логирование
@@ -37,7 +38,14 @@ def start(update: Update, context: CallbackContext) -> int:
     update.message.reply_text(greetings_text)
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_MENU)
     # Отправка сообщения с текстом и добавлением InlineKeyboard
-    update.message.reply_text(using_buttons_text, reply_markup=reply_markup_keyboard)
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        update.message.reply_photo(
+            photo=photo,
+            caption=using_buttons_text,
+            reply_markup=reply_markup_keyboard
+        )
+
     # Переход в состояние MENU
     return MENU
 
@@ -50,7 +58,19 @@ def start_over(update: Update, context: CallbackContext) -> int:
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_MENU)
     # Вместо отправки нового сообщения редактируем сообщение, которое
     # породило запрос обратного вызова.
-    query.edit_message_text(text=using_buttons_text, reply_markup=reply_markup_keyboard)
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=using_buttons_text,
+        reply_markup=reply_markup_keyboard
+    )
+
     # Переход в состояние MENU
     return MENU
 
@@ -60,7 +80,19 @@ def tops(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_TOPS)
-    query.edit_message_text(text=select_top_text, reply_markup=reply_markup_keyboard)
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=select_top_text,
+        reply_markup=reply_markup_keyboard
+    )
+
     # Переход в состояние TOPS_SUBMENU
     return TOPS_SUBMENU
 
@@ -70,7 +102,19 @@ def platforms(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_PLATFORMS)
-    query.edit_message_text(text=select_platform_text, reply_markup=reply_markup_keyboard)
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=select_platform_text,
+        reply_markup=reply_markup_keyboard
+    )
+
     # Переход в состояние PLATFORM_SUBMENU
     return PLATFORM_SUBMENU
 
@@ -81,7 +125,18 @@ def current_game(update: Update, context: CallbackContext) -> int:
     # Сохраняем ввод названия игры
     context.user_data[CURRENT_DATA] = query.data
     query.answer()
-    query.edit_message_text(text='Напишите название интересующей вас игры!')
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption='Напишите название интересующей вас игры!',
+    )
+
     # Переход в состояние CURRENT_GAME_SUBMENU
     return CURRENT_GAME_SUBMENU
 
@@ -93,10 +148,19 @@ def current_year(update: Update, context: CallbackContext) -> int:
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_TOPS)
 
     out_text = data_scraping.get_top_string(year=datetime.datetime.now().year)
-    query.edit_message_text(
-        text=out_text + want_see_tops_text,
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=out_text + want_see_tops_text,
         reply_markup=reply_markup_keyboard
     )
+
     # Переход в состояние TOPS_QUESTION
     return TOPS_QUESTION
 
@@ -108,10 +172,19 @@ def year_2020(update: Update, context: CallbackContext) -> int:
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_TOPS)
 
     out_text = data_scraping.get_top_string(year=datetime.datetime.now().year - 1)
-    query.edit_message_text(
-        text=out_text + want_see_tops_text,
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=out_text + want_see_tops_text,
         reply_markup=reply_markup_keyboard
     )
+
     # Переход в состояние TOPS_QUESTION
     return TOPS_QUESTION
 
@@ -122,10 +195,19 @@ def decade(update: Update, context: CallbackContext) -> int:
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_TOPS)
     out_text = data_scraping.get_top_string()
-    query.edit_message_text(
-        text=out_text + want_see_tops_text,
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=out_text + want_see_tops_text,
         reply_markup=reply_markup_keyboard
     )
+
     # Переход в состояние TOPS_QUESTION
     return TOPS_QUESTION
 
@@ -136,10 +218,19 @@ def pc_func(update: Update, context: CallbackContext) -> int:
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
     out_text = data_scraping.get_top_platform_string(data_scraping.Platform.PC)
-    query.edit_message_text(
-        text='TOP PC Games:\n' + out_text + want_see_platforms_text,
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption='TOP PC Games:\n' + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
+
     # Переход в состояние PLATFORM_QUESTION
     return PLATFORM_QUESTION
 
@@ -149,7 +240,19 @@ def playstation_func(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_PLAYSTATION_SUBMENU)
-    query.edit_message_text(text=select_platform_text, reply_markup=reply_markup_keyboard)
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=select_platform_text,
+        reply_markup=reply_markup_keyboard
+    )
+
     # Переход в состояние PLAYSTATION_SUBMENU
     return PLAYSTATION_SUBMENU
 
@@ -160,10 +263,19 @@ def ps4_func(update: Update, context: CallbackContext) -> int:
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
     out_text = data_scraping.get_top_platform_string(data_scraping.Platform.PS4)
-    query.edit_message_text(
-        text='TOP PlayStation 4 Games:\n' + out_text + want_see_platforms_text,
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption='TOP PlayStation 4 Games:\n' + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
+
     # Переход в состояние PLATFORM_QUESTION
     return PLATFORM_QUESTION
 
@@ -174,10 +286,19 @@ def ps5_func(update: Update, context: CallbackContext) -> int:
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
     out_text = data_scraping.get_top_platform_string(data_scraping.Platform.PS5)
-    query.edit_message_text(
-        text='TOP PlayStation 5 Games:\n' + out_text + want_see_platforms_text,
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption='TOP PlayStation 5 Games:\n' + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
+
     # Переход в состояние PLATFORM_QUESTION
     return PLATFORM_QUESTION
 
@@ -187,7 +308,19 @@ def xbox_func(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_XBOX_SUBMENU)
-    query.edit_message_text(text=select_platform_text, reply_markup=reply_markup_keyboard)
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=select_platform_text,
+        reply_markup=reply_markup_keyboard
+    )
+
     # Переход в состояние XBOX_SUBMENU
     return XBOX_SUBMENU
 
@@ -198,10 +331,19 @@ def xbox_one_func(update: Update, context: CallbackContext) -> int:
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
     out_text = data_scraping.get_top_platform_string(data_scraping.Platform.XboxOne)
-    query.edit_message_text(
-        text='TOP XboxOne Games:\n' + out_text + want_see_platforms_text,
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption='TOP XboxOne Games:\n' + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
+
     # Переход в состояние PLATFORM_QUESTION
     return PLATFORM_QUESTION
 
@@ -212,10 +354,19 @@ def xbox_series_func(update: Update, context: CallbackContext) -> int:
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
     out_text = data_scraping.get_top_platform_string(data_scraping.Platform.XboxSeries)
-    query.edit_message_text(
-        text='TOP XboxSeries X Games:\n' + out_text + want_see_platforms_text,
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption='TOP XboxSeries X Games:\n' + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
+
     # Переход в состояние PLATFORM_QUESTION
     return PLATFORM_QUESTION
 
@@ -226,10 +377,19 @@ def switch_func(update: Update, context: CallbackContext) -> int:
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_QUESTION_PLATFORMS)
     out_text = data_scraping.get_top_platform_string(data_scraping.Platform.Switch)
-    query.edit_message_text(
-        text='TOP Switch Games:\n' + out_text + want_see_platforms_text,
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption='TOP Switch Games:\n' + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
+
     # Переход в состояние PLATFORM_QUESTION
     return PLATFORM_QUESTION
 
@@ -253,14 +413,21 @@ def game_search_func(update: Update, context: CallbackContext) -> int:
         game_search_list.reverse()
         inline_keyboard_game_search_buttons(game_search_list)
         reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_SEARCH)
-        update.message.reply_text(
-            "Результаты поиска для " + game_name + ": ",
-            reply_markup=reply_markup_keyboard
-        )
+        with open('images/search.png', 'rb') as photo:
+            update.message.reply_photo(
+                photo=photo,
+                caption="Результаты поиска для " + game_name + ": ",
+                reply_markup=reply_markup_keyboard
+            )
         # Переход в состояние ON_SEARCH
         return ON_SEARCH
     else:
-        update.message.reply_text("Нет результатов поиска", reply_markup=InlineKeyboardMarkup(keyboard_ONLY_BACK))
+        with open('images/no_search_results.png', 'rb') as photo:
+            update.message.reply_photo(
+                photo=photo,
+                caption="Нет результатов поиска",
+                reply_markup=InlineKeyboardMarkup(keyboard_ONLY_BACK)
+            )
         # Переход в состояние ON_GAME_QUESTION -> выход в меню
         return ON_GAME_QUESTION
 
@@ -278,8 +445,16 @@ def game_platform_info(update: Update, context: CallbackContext) -> int:
         user_data[CURRENT_DATA] = game_to_platform
         inline_keyboard_game_platform_buttons(game_to_platform, game_search_list)
         reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME)
-        call.edit_message_text(
-            "Платформы для " + game_to_platform + ": ",
+
+        with open('images/search.png', 'rb') as photo:
+            image = telegram.InputMediaPhoto(photo)
+
+        call.edit_message_media(
+            media=image
+        )
+
+        call.edit_message_caption(
+            caption="Платформы для " + game_to_platform + ": ",
             reply_markup=reply_markup_keyboard
         )
 
@@ -294,8 +469,16 @@ def game_platform_again(update: Update, context: CallbackContext) -> int:
     query.answer()
     game_name = user_data[CURRENT_DATA]
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME)
-    query.edit_message_text(
-        text="Платформы для " + game_name + ": ",
+
+    with open('images/search.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption="Платформы для " + game_name + ": ",
         reply_markup=reply_markup_keyboard
     )
     # Переход в состояние ON_GAME
@@ -374,9 +557,17 @@ def pc_section(update: Update, context: CallbackContext):
     for game in game_search_list:
         if game.platform == 'pc' and game.name == game_name:
             out_text = get_out_text_for_platform(game)
+            data_scraping.get_game_image(game)
 
-    query.edit_message_text(
-        text=game_title + out_text + want_see_platforms_text,
+    with open('images/game_image.jpg', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo.read())
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=game_title + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
     # Переход в состояние ON_GAME_QUESTION
@@ -394,12 +585,19 @@ def switch_section(update: Update, context: CallbackContext):
     for game in game_search_list:
         if game.platform == 'switch' and game.name == game_name:
             out_text = get_out_text_for_platform(game)
+            data_scraping.get_game_image(game)
 
-    query.edit_message_text(
-        text=game_title + out_text + want_see_platforms_text,
+    with open('images/game_image.jpg', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo.read())
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=game_title + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
-    # Переход в состояние ON_GAME_QUESTION
     return ON_GAME_QUESTION
 
 
@@ -414,12 +612,19 @@ def ps4_section(update: Update, context: CallbackContext):
     for game in game_search_list:
         if game.platform == 'playstation-4' and game.name == game_name:
             out_text = get_out_text_for_platform(game)
+            data_scraping.get_game_image(game)
 
-    query.edit_message_text(
-        text=game_title + out_text + want_see_platforms_text,
+    with open('images/game_image.jpg', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo.read())
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=game_title + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
-    # Переход в состояние ON_GAME_QUESTION
     return ON_GAME_QUESTION
 
 
@@ -434,12 +639,19 @@ def ps5_section(update: Update, context: CallbackContext):
     for game in game_search_list:
         if game.platform == 'playstation-5' and game.name == game_name:
             out_text = get_out_text_for_platform(game)
+            data_scraping.get_game_image(game)
 
-    query.edit_message_text(
-        text=game_title + out_text + want_see_platforms_text,
+    with open('images/game_image.jpg', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo.read())
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=game_title + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
-    # Переход в состояние ON_GAME_QUESTION
     return ON_GAME_QUESTION
 
 
@@ -454,12 +666,19 @@ def xbox_one_section(update: Update, context: CallbackContext):
     for game in game_search_list:
         if game.platform == 'xbox-one' and game.name == game_name:
             out_text = get_out_text_for_platform(game)
+            data_scraping.get_game_image(game)
 
-    query.edit_message_text(
-        text=game_title + out_text + want_see_platforms_text,
+    with open('images/game_image.jpg', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo.read())
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=game_title + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
-    # Переход в состояние ON_GAME_QUESTION
     return ON_GAME_QUESTION
 
 
@@ -474,20 +693,28 @@ def xbox_series_section(update: Update, context: CallbackContext):
     for game in game_search_list:
         if game.platform == 'xbox-series-x' and game.name == game_name:
             out_text = get_out_text_for_platform(game)
+            data_scraping.get_game_image(game)
 
-    query.edit_message_text(
-        text=game_title + out_text + want_see_platforms_text,
+    with open('images/game_image.jpg', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo.read())
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=game_title + out_text + want_see_platforms_text,
         reply_markup=reply_markup_keyboard
     )
-    # Переход в состояние ON_GAME_QUESTION
     return ON_GAME_QUESTION
 
 
 def get_out_text_for_platform(game) -> str:
+    game_data = data_scraping.get_description_score_details_by_game(game)
     return 'Release Date: ' + game.date + '\n' + \
-           'Metascore: ' + game.score + ' - based on ' + 'null' + ' Critic Reviews\n' + \
-           'User Score: ' + 'null' + ' - based on ' + 'null' + ' Ratings\n' + \
-           'null text\n'
+           'Metascore: ' + game.score + ' - based on ' + game_data[3] + ' Critic Reviews\n' + \
+           'User Score: ' + game_data[1] + ' - based on ' + game_data[2] + ' Ratings\n' + \
+           game_data[0] + '\n'
 
 
 def end_on_game(update: Update, context: CallbackContext) -> int:
@@ -506,6 +733,17 @@ def new_start(update: Update, context: CallbackContext):
     query = update.callback_query
     query.answer()
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_MENU)
-    query.edit_message_text(text=using_buttons_text, reply_markup=reply_markup_keyboard)
+
+    with open('images/metacritic_logo.png', 'rb') as photo:
+        image = telegram.InputMediaPhoto(photo)
+
+    query.edit_message_media(
+        media=image
+    )
+
+    query.edit_message_caption(
+        caption=using_buttons_text,
+        reply_markup=reply_markup_keyboard
+    )
     # Переход в состояние MENU
     return MENU
