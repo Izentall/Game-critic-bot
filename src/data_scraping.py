@@ -158,17 +158,23 @@ def get_result_of_query(query: str):
             if TBA_symbol != 'TBA' and year != 'TBA':
                 if platform == 'PC':
                     result.append(Game(score, name, 'pc', year))
+                    result[-1].url = url
                 if platform == 'XONE':
                     result.append(Game(score, name, 'xbox-one', year))
+                    result[-1].url = url
                 if platform == 'PS4':
                     result.append(Game(score, name, 'playstation-4', year))
+                    result[-1].url = url
                 if platform == 'PS5':
                     result.append(Game(score, name, 'playstation-5', year))
+                    result[-1].url = url
                 if platform == 'Switch':
                     result.append(Game(score, name, 'switch', year))
+                    result[-1].url = url
                 if platform == 'XBSX':
                     result.append(Game(score, name, 'xbox-series-x', year))
-                result[-1].url = url
+                    result[-1].url = url
+
 
     return result
 
@@ -195,10 +201,15 @@ def get_description_score_details_by_game(game: Game):
             desc_text += ' ' + " ".join(desc_container[i].split()).strip()
 
     temp = html_soup.find('div', class_='userscore_wrap feature_userscore')
-    user_score = temp.a.div.text.strip()
-    user_reviews = temp.p.a.text.strip()
-    critic_reviews = html_soup.find('div', class_='score_summary metascore_summary')
-    critic_reviews = critic_reviews.find('div', class_='summary').p.a.span.text.strip()
+    if temp is not None:
+        user_score = temp.a.div.text.strip()
+        user_reviews = temp.p.a.text.strip().split()[0]
+        critic_reviews = html_soup.find('div', class_='score_summary metascore_summary')
+        critic_reviews = critic_reviews.find('div', class_='summary').p.a.span.text.strip()
+    else:
+        user_score = -1
+        user_reviews = -1
+        critic_reviews = -1
 
     return desc_text, user_score, user_reviews, critic_reviews
 
