@@ -1,3 +1,6 @@
+import json
+import os
+import urllib.request
 from enum import Enum
 
 import requests
@@ -19,6 +22,7 @@ class Game(object):
         self.name = name
         self.platform = platform
         self.date = date
+        self.url = ''
 
     def __str__(self):
         return self.name + ' ' + self.platform + ' ' + self.date + ' ' + self.score
@@ -98,8 +102,15 @@ def get_top_10_by_platform(platform: Platform, text=None):
 
 
 def get_result_of_query(query: str):
+    result = []
+
     if query == "":
-        raise ValueError("Empty string")
+        return result
+        # raise ValueError("Empty string")
+
+    if query.startswith('/'):
+        return result
+
     search_url = "https://www.metacritic.com/search/game/{}/results"
     words = query.split()
 
@@ -113,17 +124,20 @@ def get_result_of_query(query: str):
     html_soup = BeautifulSoup(response.text, 'html.parser')
 
     if html_soup.find('div', class_='body').p.text.strip() == 'No search results found.':
-        raise ValueError("No search results")
+        return result
+        # raise ValueError("No search results")
 
     pages_container = html_soup.find('ul', class_='pages')
-
     games_container = []
-    for i in range(len(pages_container)):
-        response = get_response(search_url + '?page=' + str(i))
+    if pages_container is None:
+        response = get_response(search_url)
         html_soup = BeautifulSoup(response.text, 'html.parser')
         games_container.append(html_soup.find('ul', class_='search_results module'))
-
-    result = []
+    else:
+        for i in range(len(pages_container)):
+            response = get_response(search_url + '?page=' + str(i))
+            html_soup = BeautifulSoup(response.text, 'html.parser')
+            games_container.append(html_soup.find('ul', class_='search_results module'))
 
     for games in games_container:
         games_container_local = games.find_all('li')
@@ -132,7 +146,8 @@ def get_result_of_query(query: str):
             score = game.span.text.strip()
             platform = game.p.span.text.strip()
             year = game.p.text.split()[2:]
-
+            url = game.find('div', class_='main_stats').h3.a
+            url = url.attrs['href']
             if len(year) == 1 and year[0] == 'TBA':
                 continue
 
@@ -145,20 +160,130 @@ def get_result_of_query(query: str):
             if TBA_symbol != 'TBA' and year != 'TBA':
                 if platform == 'PC':
                     result.append(Game(score, name, 'pc', year))
+                    result[-1].url = url
                 if platform == 'XONE':
                     result.append(Game(score, name, 'xbox-one', year))
+                    result[-1].url = url
                 if platform == 'PS4':
                     result.append(Game(score, name, 'playstation-4', year))
+                    result[-1].url = url
                 if platform == 'PS5':
                     result.append(Game(score, name, 'playstation-5', year))
+                    result[-1].url = url
                 if platform == 'Switch':
                     result.append(Game(score, name, 'switch', year))
+                    result[-1].url = url
                 if platform == 'XBSX':
                     result.append(Game(score, name, 'xbox-series-x', year))
+                    result[-1].url = url
 
-    if len(result) == 0:
-        raise ValueError("No search results")
     return result
+
+
+def get_description_score_details_by_game(game: Game):
+    if game.url == '':
+        return ''
+
+    url = 'https://www.metacritic.com' + game.url
+    response = get_response(url)
+    html_soup = BeautifulSoup(response.text, 'html.parser')
+    res = html_soup.find('div', class_='section product_details')
+    res1 = res.find('div', class_='details side_details').ul
+    desc_container = res1.text
+    desc_container = os.linesep.join([s for s in desc_container.splitlines() if s])
+    desc_container = desc_container.splitlines()
+    desc_text = ''
+    for i in range(len(desc_container) - 1):
+        if ':' in desc_container[i]:
+            if desc_text != '':
+                desc_text += '\n'
+            desc_text += " ".join(desc_container[i].split()).strip()
+        else:
+            desc_text += ' ' + " ".join(desc_container[i].split()).strip()
+
+    temp = html_soup.find('div', class_='userscore_wrap feature_userscore')
+    if temp is not None:
+        user_score = temp.a.div.text.strip()
+        user_reviews = temp.p.a.text.strip().split()[0]
+        critic_reviews = html_soup.find('div', class_='score_summary metascore_summary')
+        critic_reviews = critic_reviews.find('div', class_='summary').p.a.span.text.strip()
+    else:
+        user_score = -1
+        user_reviews = -1
+        critic_reviews = -1
+
+    return desc_text, user_score, user_reviews, critic_reviews
+
+
+def get_game_image(game: Game):
+    if game.url == '':
+        return 0
+
+    print(game.name + ' ' + game.platform)
+    url = 'https://www.metacritic.com' + game.url
+    response = get_response(url)
+    html_soup = BeautifulSoup(response.text, 'html.parser')
+    res = html_soup.find('div', class_='product_image large_image must_play')
+    all_images = [img["src"] for img in res.find_all('img', {'class': 'product_image large_image'})]
+    image_url = all_images[0]
+    print('Ссылка на картинку с metacritic: ')
+    print(image_url)
+
+    download_image(image_url, 'images/', 'game_metacritic_icon')
+
+    file_path = 'images/game_metacritic_icon.jpg'
+    search_url = 'https://yandex.ru/images/search'
+    files = {'upfile': ('blob', open(file_path, 'rb'), 'image/jpeg')}
+    params = {'rpt': 'imageview', 'format': 'json',
+              'request': '{"blocks":[{"block":"b-page_type_search-by-image__link"}]}'}
+    response = requests.post(search_url, params=params, files=files)
+    query_string = json.loads(response.content)['blocks'][0]['params']['url']
+    img_search_url = search_url + '?' + query_string
+    print('Ссылка на картинку поиска в Yandex: ')
+    print(img_search_url)
+
+    soup = BeautifulSoup(requests.get(img_search_url).text, 'html.parser')
+    similar = soup.find_all('div', class_='CbirSimilar-Thumb')
+    img_tag = similar[0].find('a').get('href')
+
+    img_url = 'https://yandex.ru' + img_tag
+    print('Ссылка на первую в поиске картинку:')
+    print(img_url)
+
+    s = BeautifulSoup(requests.get(img_url).text, 'html.parser')
+
+    try:
+        # print('here 1')
+        resp2 = s.find('div', class_='serp-item serp-item_type_search serp-item_group_search serp-item_pos_0 '
+                                     'serp-item_selected_yes serp-item_scale_yes justifier__item i-bem').get_attribute_list(
+            'data-bem')
+    except Exception as e:
+        # print('here 2')
+        resp2 = s.find('div', class_='serp-item serp-item_type_search serp-item_group_search serp-item_pos_0 '
+                                     'serp-item_scale_yes justifier__item i-bem').get_attribute_list(
+            'data-bem')
+
+    final_url = json.loads(resp2[0])['serp-item']['preview'][0]['url']
+    print('Итоговая ссылка на картинку: ')
+    print(final_url)
+
+    is_downloaded = download_image(final_url, 'images/', 'game_image')
+
+    # Если сайт запрещает скачивать, берем картинку с metacritic
+    if not is_downloaded:
+        with open('images/game_metacritic_icon.jpg', 'rb') as image:
+            copy = image.read()
+        with open('images/game_image.jpg', 'wb') as file:
+            file.write(copy)
+
+
+def download_image(url, file_path, file_name):
+    full_path = file_path + file_name + '.jpg'
+    try:
+        urllib.request.urlretrieve(url, full_path)
+        return True
+    except Exception as e:
+        return False
 
 
 def get_top_string(year=None):

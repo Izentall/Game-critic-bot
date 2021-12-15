@@ -7,23 +7,23 @@ from telegram.ext import (
 )
 
 from authorization import token
-from src.commands import (
-    start, start_over, help_func, game_info_func,
+from commands import (
+    start, start_over, help_func, game_search_func,
     tops, platforms, current_game,
     current_year, year_2020, decade,
     pc_func, playstation_func, xbox_func, switch_func, ps4_func, ps5_func,
     xbox_one_func, xbox_series_func,
     pc_section, switch_section, ps4_section, ps5_section, xbox_one_section,
-    xbox_series_section, game_info_again, end_on_game,
+    xbox_series_section, game_platform_again, end_on_game, game_platform_info, start_fallback,
 )
-from src.constants import (
+from constants import (
     MENU, TOPS_SUBMENU, TOPS_QUESTION, PLATFORM_SUBMENU, PLATFORM_QUESTION, CURRENT_GAME,
     TOPS, PLATFORMS, CURRENT_YEAR, YEAR_2020, DECADE, ON_GAME, ON_GAME_QUESTION,
     PC, PLAYSTATION, XBOX, SWITCH, CURRENT_GAME_SUBMENU,
     YES_TOPS, NO_TOPS, YES_PLATFORMS, NO_PLATFORMS,
     PLAYSTATION_SUBMENU, PS4, PS5, XBOX_SUBMENU, XBOX_ONE, XBOX_SERIES,
     PC_SECTION, SWITCH_SECTION, PS4_SECTION, PS5_SECTION, XBOX_ONE_SECTION, XBOX_SERIES_SECTION,
-    YES_ON_GAME, NO_ON_GAME,
+    YES_ON_GAME, NO_ON_GAME, ON_SEARCH, SEARCH,
 )
 
 
@@ -38,6 +38,9 @@ def main() -> None:
     on_game_conv_handler = ConversationHandler(
         entry_points=[CallbackQueryHandler(current_game, pattern='^' + str(CURRENT_GAME) + '$')],
         states={
+            ON_SEARCH: [
+                CallbackQueryHandler(game_platform_info, pattern=Filters.text),
+            ],
             ON_GAME: [
                 CallbackQueryHandler(pc_section, pattern='^' + str(PC_SECTION) + '$'),
                 CallbackQueryHandler(switch_section, pattern='^' + str(SWITCH_SECTION) + '$'),
@@ -47,13 +50,16 @@ def main() -> None:
                 CallbackQueryHandler(xbox_series_section, pattern='^' + str(XBOX_SERIES_SECTION) + '$'),
             ],
             ON_GAME_QUESTION: [
-                CallbackQueryHandler(game_info_again, pattern='^' + str(YES_ON_GAME) + '$'),
+                CallbackQueryHandler(game_platform_again, pattern='^' + str(YES_ON_GAME) + '$'),
             ],
             CURRENT_GAME_SUBMENU: [
-                MessageHandler(Filters.text, game_info_func),
+                MessageHandler(Filters.text, game_search_func),
             ],
         },
-        fallbacks=[CallbackQueryHandler(end_on_game, pattern='^' + str(NO_ON_GAME) + '$')],
+        fallbacks=[
+            CallbackQueryHandler(end_on_game, pattern='^' + str(NO_ON_GAME) + '$'),
+            CommandHandler('start', start_fallback),
+        ],
         map_to_parent={
             NO_ON_GAME: MENU
         },
@@ -109,7 +115,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler('help', help_func))
 
     # Любые сообщения - предположительно название игры
-    # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, game_info_func))
+    # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, game_search_func))
 
     # Старт бота
     updater.start_polling()

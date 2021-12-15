@@ -13,7 +13,7 @@ from src.test.test_constatns import TOP_5_OF_2021, TOP_5_OF_2020, TOP_10_OF_DECA
     ]
 )
 def test_get_top_5_by_year(year, filename, result):
-    file = open(Path(Path.cwd(), 'src', 'test', 'html_pages', filename), 'r', encoding='utf-8')
+    file = open(Path(Path.cwd(), 'html_pages', filename), 'r', encoding='utf-8')
     top___by_year = get_top_5_by_year(year, text=file.read())
     out_text = ''
     for game in top___by_year[:5]:
@@ -23,7 +23,7 @@ def test_get_top_5_by_year(year, filename, result):
 
 @pytest.mark.parsing
 def test_get_top_50_for_decade():
-    file = open(Path(Path.cwd(), 'src', 'test', 'html_pages', 'top_10_of_decade.html'), 'r', encoding='utf-8')
+    file = open(Path(Path.cwd(), 'html_pages', 'top_10_of_decade.html'), 'r', encoding='utf-8')
     top___by_year_decade = get_top_50_for_decade(text=file.read())
     out_text = ''
     for game in top___by_year_decade[:10]:
@@ -33,7 +33,7 @@ def test_get_top_50_for_decade():
 
 @pytest.mark.parsing
 def test_get_top_10_by_platform():
-    file = open(Path(Path.cwd(), 'src', 'test', 'html_pages', 'top_10_by_platform.html'), 'r', encoding='utf-8')
+    file = open(Path(Path.cwd(), 'html_pages', 'top_10_by_platform.html'), 'r', encoding='utf-8')
     top_by_platform = get_top_10_by_platform(Platform('pc'), text=file.read())
     out_text = ''
     for game in top_by_platform[:10]:
