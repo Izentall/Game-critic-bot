@@ -1,3 +1,5 @@
+import os
+
 from telegram.ext import (
     Updater,
     CommandHandler,
@@ -6,7 +8,6 @@ from telegram.ext import (
     MessageHandler, Filters,
 )
 
-from authorization import token
 from commands import (
     start, start_over, help_func, game_search_func,
     tops, platforms, current_game,
@@ -30,6 +31,7 @@ from constants import (
 def main() -> None:
     """Start the bot."""
     # Создание Updater и связывание с токеном бота
+    token = os.getenv('TOKEN')
     updater = Updater(token)
 
     # Получение dispatcher и регистрация handlers

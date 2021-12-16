@@ -406,6 +406,8 @@ def game_search_func(update: Update, context: CallbackContext) -> int:
     #   update.message.reply_text('No commands in name!')
     user_data[CURRENT_DATA] = update.message.text
     game_name = user_data[CURRENT_DATA]
+    user = update.message.from_user.full_name
+    logger.info("User <%s> entered <%s>.", user, game_name)
     game_search_list.clear()
     game_search_list.extend(data_scraping.get_result_of_query(game_name))
 
@@ -443,6 +445,7 @@ def game_platform_info(update: Update, context: CallbackContext) -> int:
         buttons_list.reverse()
         game_to_platform = buttons["inline_keyboard"][int(game_index)][0]["text"]
         user_data[CURRENT_DATA] = game_to_platform
+        logger.info("User chose game <%s>.", game_to_platform)
         inline_keyboard_game_platform_buttons(game_to_platform, game_search_list)
         reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME)
 
@@ -468,6 +471,7 @@ def game_platform_again(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     game_name = user_data[CURRENT_DATA]
+    logger.info("User chose game <%s>.", game_name)
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME)
 
     with open('images/search.png', 'rb') as photo:
@@ -551,6 +555,7 @@ def pc_section(update: Update, context: CallbackContext):
     query = update.callback_query
     query.answer()
     game_name = context.user_data[CURRENT_DATA]
+    logger.info("User chose pc platform.")
     game_title = game_name + ' - PC\n'
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME_QUESTION)
     out_text = ''
@@ -579,6 +584,7 @@ def switch_section(update: Update, context: CallbackContext):
     query = update.callback_query
     query.answer()
     game_name = context.user_data[CURRENT_DATA]
+    logger.info("User chose switch platform.")
     game_title = game_name + ' - Switch\n'
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME_QUESTION)
     out_text = ''
@@ -606,6 +612,7 @@ def ps4_section(update: Update, context: CallbackContext):
     query = update.callback_query
     query.answer()
     game_name = context.user_data[CURRENT_DATA]
+    logger.info("User chose PS4 platform.")
     game_title = game_name + ' - PS4\n'
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME_QUESTION)
     out_text = ''
@@ -633,6 +640,7 @@ def ps5_section(update: Update, context: CallbackContext):
     query = update.callback_query
     query.answer()
     game_name = context.user_data[CURRENT_DATA]
+    logger.info("User chose PS5 platform.")
     game_title = game_name + ' - PS5\n'
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME_QUESTION)
     out_text = ''
@@ -660,6 +668,7 @@ def xbox_one_section(update: Update, context: CallbackContext):
     query = update.callback_query
     query.answer()
     game_name = context.user_data[CURRENT_DATA]
+    logger.info("User chose XboxOne platform.")
     game_title = game_name + ' - XboxOne\n'
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME_QUESTION)
     out_text = ''
@@ -687,6 +696,7 @@ def xbox_series_section(update: Update, context: CallbackContext):
     query = update.callback_query
     query.answer()
     game_name = context.user_data[CURRENT_DATA]
+    logger.info("User chose XboxSeries X platform.")
     game_title = game_name + ' - XboxSeries X\n'
     reply_markup_keyboard = InlineKeyboardMarkup(keyboard_ON_GAME_QUESTION)
     out_text = ''
@@ -711,9 +721,9 @@ def xbox_series_section(update: Update, context: CallbackContext):
 
 def get_out_text_for_platform(game) -> str:
     game_data = data_scraping.get_description_score_details_by_game(game)
-    return 'Release Date: ' + game.date + '\n' + \
-           'Metascore: ' + game.score + ' - based on ' + game_data[3] + ' Critic Reviews\n' + \
-           'User Score: ' + game_data[1] + ' - based on ' + game_data[2] + ' Ratings\n' + \
+    return 'Release Date: ' + str(game.date) + '\n' + \
+           'Metascore: ' + str(game.score) + ' - based on ' + str(game_data[3]) + ' Critic Reviews\n' + \
+           'User Score: ' + str(game_data[1]) + ' - based on ' + str(game_data[2]) + ' Ratings\n' + \
            game_data[0] + '\n'
 
 
