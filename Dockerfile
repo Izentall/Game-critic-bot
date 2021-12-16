@@ -9,3 +9,6 @@ COPY src .
 
 WORKDIR /src/test
 CMD ["pytest", "-m", "parsing"]
+
+WORKDIR /src
+CMD ["python", "bot.py"]

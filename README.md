@@ -4,6 +4,7 @@
 
 * [Introduction](https://github.com/TheTedLab/game-critic-bot#introduction)
 * [Contributors](https://github.com/TheTedLab/game-critic-bot#contributors)
+* [Docker](https://github.com/TheTedLab/game-critic-bot#docker)
 
 ## Introduction
 
@@ -21,3 +22,11 @@ The user can apply various filters to get the top video games for a specific pla
 2. Хильченко Михаил Юрьевич - [khilchenkomikhail](https://github.com/khilchenkomikhail)
 3. Кичигин Юрий Сергеевич - [Izentall](https://github.com/Izentall)
 4. Ершов Вадим Дмитриевич - [vadim01er](https://github.com/vadim01er)
+
+## Docker
+
+For building the image with bot and tests  
+`docker build -t gamebot .`
+
+To run bot configure the API token  
+`docker run -e "TOKEN=YOUR-API-TOKEN" --name gamebot gamebot`
