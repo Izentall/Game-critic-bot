@@ -29,7 +29,14 @@ For building the image with bot and tests
 `docker build -t gamebot .`
 
 To run bot configure the API token and to run test configure the API ID  
-`docker run -e "TOKEN=YOUR-API-TOKEN" -e "API_ID=YOUR-API-ID" -e "API_HASH=YOUR-API-HASH" -e "SESSION_STRING=YOUR-SESSION-STRING" --name gamebot gamebot`
+```
+docker run -e "TOKEN=YOUR-BOT-TOKEN" \
+    -e "API_ID=YOUR-API-ID" \
+    -e "API_HASH=YOUR-API-HASH" \
+    -e "SESSION_STRING=YOUR-SESSION-STRING" \
+    -e "BOT_TAG=@YOUR-BOT-TAG" \
+    --name gamebot gamebot
+```
 
 ### Get your `API_ID` and `API_HASH`:
 1. Sign in your Telegram account with your phone number [here](https://my.telegram.org/). Then choose “API development tools”
