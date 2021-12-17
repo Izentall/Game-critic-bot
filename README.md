@@ -28,5 +28,13 @@ The user can apply various filters to get the top video games for a specific pla
 For building the image with bot and tests  
 `docker build -t gamebot .`
 
-To run bot configure the API token  
-`docker run -e "TOKEN=YOUR-API-TOKEN" --name gamebot gamebot`
+To run bot configure the API token and to run test configure the API ID  
+`docker run -e "TOKEN=YOUR-API-TOKEN" -e "API_ID=YOUR-API-ID" -e "API_HASH=YOUR-API-HASH" -e "SESSION_STRING=YOUR-SESSION-STRING" --name gamebot gamebot`
+
+### Get your `API_ID` and `API_HASH`:
+1. Sign in your Telegram account with your phone number [here](https://my.telegram.org/). Then choose “API development tools”
+2. If it is your first time doing so, it will ask you for an app name and a short name, you can change both of them later if you need to. Submit the form when you have completed it
+3. You will then see the `API_ID` and `API_HASH`
+
+### Get your `SESSION_STRING`:
+Run script `get_sessoin_string.py`, located is src/tests, as `python get_sessoin_string.py` and follow instructions
