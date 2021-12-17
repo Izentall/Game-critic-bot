@@ -1,4 +1,5 @@
 import datetime
+import os
 import time
 
 import pytest
@@ -11,13 +12,15 @@ from src import data_scraping
 from src.constants import (greetings_text, using_buttons_text, select_top_text, keyboard_MENU, keyboard_TOPS,
                            keyboard_QUESTION_TOPS, select_platform_text, keyboard_PLATFORMS,
                            keyboard_QUESTION_PLATFORMS, want_see_tops_text, keyboard_PLAYSTATION_SUBMENU,
-                           keyboard_XBOX_SUBMENU)
+                           keyboard_XBOX_SUBMENU, want_see_platforms_text)
+
+bot_tag = os.getenv('BOT_TAG')
 
 @pytest.mark.bot
 @mark.asyncio
 async def test_start(client: TelegramClient):
     # Create a conversation
-    async with client.conversation("@GameMetaCriticTestBot", timeout=5) as conv:
+    async with client.conversation(bot_tag, timeout=5) as conv:
         # User > /start
         await conv.send_message("/start")
 
@@ -47,7 +50,7 @@ async def test_start(client: TelegramClient):
 @mark.asyncio
 async def test_tops(client: TelegramClient, button_index: int, year):
     # Create a conversation
-    async with client.conversation("@GameMetaCriticTestBot", timeout=5) as conv:
+    async with client.conversation(bot_tag, timeout=5) as conv:
         # User > /start
         await conv.send_message("/start")
 
@@ -74,7 +77,7 @@ async def test_tops(client: TelegramClient, button_index: int, year):
 
         # Bot < Хотите посмотреть другие топы?
         # [Да] [Нет]
-        resp = await get_last_message(client, conv, timeout=1)
+        resp = await get_last_message(client, conv, timeout=2)
         await check_certain_top(resp, year)
         await resp.click(text=keyboard_QUESTION_TOPS[0][0].text)
 
@@ -88,7 +91,7 @@ async def test_tops(client: TelegramClient, button_index: int, year):
 
         # Bot < Хотите посмотреть другие топы?
         # [Да] [Нет]
-        resp = await get_last_message(client, conv, timeout=1)
+        resp = await get_last_message(client, conv, timeout=2)
         await check_certain_top(resp, year)
         await resp.click(text=keyboard_QUESTION_TOPS[0][1].text)
 
@@ -100,18 +103,18 @@ async def test_tops(client: TelegramClient, button_index: int, year):
 
 @pytest.mark.bot
 @pytest.mark.parametrize(
-    'button_index, submenu',
+    'button_index, submenu, platforms',
     [
-        pytest.param((0, 0), None),
-        pytest.param((0, 1), keyboard_PLAYSTATION_SUBMENU),
-        pytest.param((1, 0), keyboard_XBOX_SUBMENU),
-        pytest.param((1, 1), None)
+        pytest.param((0, 0), None, [data_scraping.Platform.PC]),
+        pytest.param((0, 1), keyboard_PLAYSTATION_SUBMENU, [data_scraping.Platform.PS4, data_scraping.Platform.PS5]),
+        pytest.param((1, 0), keyboard_XBOX_SUBMENU, [data_scraping.Platform.XboxOne, data_scraping.Platform.XboxSeries]),
+        pytest.param((1, 1), None, [data_scraping.Platform.Switch])
     ]
 )
 @mark.asyncio
-async def test_platforms(client: TelegramClient, button_index: tuple, submenu: list):
+async def test_platforms(client: TelegramClient, button_index: tuple, submenu: list, platforms: list):
     # Create a conversation
-    async with client.conversation("@GameMetaCriticTestBot", timeout=5) as conv:
+    async with client.conversation(bot_tag, timeout=5) as conv:
         # User > /start
         await conv.send_message("/start")
 
@@ -129,7 +132,7 @@ async def test_platforms(client: TelegramClient, button_index: tuple, submenu: l
 
         amount = get_keyboard_length(submenu) if submenu is not None else 1
         for i in range(amount):
-            await resp.click(text=keyboard_MENU[0][1].text)
+            await resp.click(text=keyboard_MENU[1][0].text)
 
             # Bot < Выберите платформу:
             # [PC] [PS]
@@ -148,8 +151,8 @@ async def test_platforms(client: TelegramClient, button_index: tuple, submenu: l
 
             # Bot < Хотите посмотреть другие платформы?
             # [Да] [Нет]
-            resp = await get_last_message(client, conv)
-            await check_certain_platform(resp)
+            resp = await get_last_message(client, conv, timeout=2)
+            await check_certain_platform(resp, platforms[i])
             await resp.click(text=keyboard_QUESTION_PLATFORMS[0][0].text)
 
             # Bot < Выберите платформу:
@@ -169,8 +172,8 @@ async def test_platforms(client: TelegramClient, button_index: tuple, submenu: l
 
             # Bot < Хотите посмотреть другие платформы?
             # [Да] [Нет]
-            resp = await get_last_message(client, conv)
-            await check_certain_platform(resp)
+            resp = await get_last_message(client, conv, timeout=2)
+            await check_certain_platform(resp, platforms[i])
             await resp.click(text=keyboard_QUESTION_PLATFORMS[0][1].text)
 
             # Bot < Или воспользуйся кнопками:
@@ -188,13 +191,9 @@ async def check_certain_top(resp: Message, year):
             assert resp.buttons[i][j].text == keyboard_QUESTION_TOPS[i][j].text
 
 
-async def check_certain_platform(resp: Message):
-    # Пока захардкодил, так как не увидел парсинга инфы с сайта в боте
-    assert "1. " in resp.raw_text
-    assert "2. " in resp.raw_text
-    assert "3. " in resp.raw_text
-    assert "4. " in resp.raw_text
-    assert "5. " in resp.raw_text
+async def check_certain_platform(resp: Message, platform: data_scraping.Platform):
+    assert data_scraping.get_top_platform_string(platform) in resp.raw_text
+    assert want_see_platforms_text in resp.raw_text
     assert resp.button_count == get_keyboard_length(keyboard_QUESTION_PLATFORMS)
     for i in range(len(resp.buttons)):
         for j in range(len(resp.buttons[i])):
@@ -210,7 +209,7 @@ async def check_keyboard(resp: Message, keyboard, message_text):
             assert resp.buttons[i][j].text == keyboard[i][j].text
 
 
-async def get_last_message(client: TelegramClient, conv: Conversation, timeout=0.15):
+async def get_last_message(client: TelegramClient, conv: Conversation, timeout=0.5):
     time.sleep(timeout)
     messages_list = await client.get_messages(conv.chat)
     return messages_list[0]
